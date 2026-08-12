@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>티쳐무의 정보교육 포털</title>
+<style>
+  :root{
+    --bg1:#eef4ff;
+    --bg2:#fef6f0;
+    --card:#ffffff;
+    --ink:#1f2a44;
+    --ink-soft:#5b6785;
+    --line:#e6ebf5;
+    --brand:#4f7cff;
+    --brand-soft:#eaf0ff;
+    --shadow:0 10px 30px rgba(38,63,140,.10);
+    --shadow-hover:0 18px 44px rgba(38,63,140,.20);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,-apple-system,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #dbe7ff 0%, transparent 55%),
+      radial-gradient(1000px 560px at 100% 0%, #ffe6d6 0%, transparent 50%),
+      linear-gradient(180deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:40px 22px 64px;}
+
+  header.hero{text-align:center;margin-bottom:30px;}
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--brand-soft);color:var(--brand);
+    font-weight:700;font-size:13px;letter-spacing:.02em;
+    padding:7px 14px;border-radius:999px;margin-bottom:16px;
+  }
+  h1{
+    font-size:clamp(28px,5vw,44px);line-height:1.15;margin:0 0 12px;
+    font-weight:800;letter-spacing:-.02em;
+  }
+  h1 .grad{
+    background:linear-gradient(100deg,#4f7cff,#8b5cf6 55%,#ff7a59);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .subtitle{color:var(--ink-soft);font-size:16px;margin:0 auto;max-width:620px;line-height:1.6;}
+
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;
+    margin:28px 0 8px;
+  }
+  .search{
+    position:relative;flex:1 1 320px;max-width:440px;
+  }
+  .search input{
+    width:100%;padding:13px 16px 13px 44px;border-radius:14px;
+    border:1px solid var(--line);background:#fff;font-size:15px;color:var(--ink);
+    box-shadow:var(--shadow);outline:none;transition:.2s;
+  }
+  .search input:focus{border-color:var(--brand);box-shadow:0 0 0 4px var(--brand-soft);}
+  .search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);opacity:.45;}
+
+  .filters{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0 6px;}
+  .chip{
+    border:1px solid var(--line);background:#fff;color:var(--ink-soft);
+    padding:8px 15px;border-radius:999px;font-size:14px;font-weight:600;
+    cursor:pointer;transition:.18s;
+  }
+  .chip:hover{border-color:var(--brand);color:var(--brand);}
+  .chip.active{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 6px 16px rgba(79,124,255,.35);}
+
+  .section{margin-top:34px;}
+  .section-head{display:flex;align-items:center;gap:10px;margin:0 0 16px;padding:0 2px;}
+  .section-head .dot{width:11px;height:11px;border-radius:4px;}
+  .section-head h2{font-size:19px;margin:0;font-weight:800;letter-spacing:-.01em;}
+  .section-head .count{color:var(--ink-soft);font-size:14px;font-weight:600;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+
+  .card{
+    display:flex;flex-direction:column;text-decoration:none;color:inherit;
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:20px;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s,border-color .18s;
+    position:relative;overflow:hidden;
+  }
+  .card::before{
+    content:"";position:absolute;inset:0 0 auto 0;height:4px;
+    background:var(--accent,#4f7cff);opacity:.9;
+  }
+  .card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:var(--accent,#4f7cff);}
+  .card .icon{
+    width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+    font-size:24px;background:var(--accent-soft,#eaf0ff);margin-bottom:14px;
+  }
+  .card h3{font-size:16.5px;margin:0 0 6px;font-weight:800;letter-spacing:-.01em;}
+  .card p{font-size:13.5px;color:var(--ink-soft);margin:0 0 14px;line-height:1.55;flex:1;}
+  .card .go{
+    display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;
+    color:var(--accent,#4f7cff);
+  }
+  .card .url{font-size:11.5px;color:#9aa4bd;margin-top:8px;word-break:break-all;}
+
+  .empty{text-align:center;color:var(--ink-soft);padding:60px 0;font-size:16px;display:none;}
+
+  footer{text-align:center;margin-top:46px;color:var(--ink-soft);font-size:13px;line-height:1.7;}
+  footer a{color:var(--brand);text-decoration:none;}
+
+  @media (max-width:520px){
+    .wrap{padding:28px 16px 48px;}
+    .grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <span class="badge">📚 티쳐무 · 정보교육 자료실</span>
+    <h1>티쳐무의 <span class="grad">정보교육 포털</span></h1>
+    <p class="subtitle">웹교과서, 실습실, 학습 도구를 한 곳에서. 카드를 클릭하면 새 탭에서 열립니다.</p>
+  </header>
+
+  <div class="toolbar">
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="q" type="text" placeholder="사이트 이름으로 검색…" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="filters" id="filters"></div>
+
+  <div id="sections"></div>
+  <div class="empty" id="empty">검색 결과가 없어요. 다른 키워드로 찾아보세요.</div>
+
+  <footer>
+    <div>© 티쳐무(무무) · 정보교육 웹 자료 모음</div>
+    <div style="margin-top:6px;opacity:.8">모든 자료는 GitHub Pages(trmoo.github.io)에서 제공됩니다.</div>
+  </footer>
+</div>
+
+<script>
+const DATA = [
+  { cat:"웹교과서", color:"#4f7cff", soft:"#eaf0ff", dot:"#4f7cff",
+    items:[
+      { icon:"📊", title:"데이터 과학 웹교과서", desc:"데이터 과학 과목을 위한 온라인 교과서", url:"https://trmoo.github.io/22hs-ds/" },
+      { icon:"🤖", title:"인공지능 기초 웹교과서", desc:"인공지능 기초 과목을 위한 온라인 교과서", url:"https://trmoo.github.io/22hs-ai/" },
+      { icon:"💻", title:"프로그래밍 웹교과서", desc:"프로그래밍 과목을 위한 온라인 교과서", url:"https://trmoo.github.io/22hs-programming/" },
+    ]
+  },
+  { cat:"노트 · 실습실", color:"#8b5cf6", soft:"#f0eafe", dot:"#8b5cf6",
+    items:[
+      { icon:"📝", title:"티쳐무의 정보노트 실습실", desc:"정보 과목 학습 노트와 실습 공간", url:"https://trmoo.github.io/informatics_trmoo/" },
+      { icon:"🧠", title:"티쳐무의 인공지능 기초 노트", desc:"인공지능 기초 학습 노트", url:"https://trmoo.github.io/aiBasics_trmoo/" },
+      { icon:"🔎", title:"LLM-RAG 실습실", desc:"대규모 언어모델·RAG 개념 실습 공간", url:"https://trmoo.github.io/llm-rag-lab/" },
+      { icon:"🔌", title:"피지컬컴퓨팅 도구 가이드", desc:"피지컬 컴퓨팅 도구 선택·활용 아이디어 가이드", url:"https://trmoo.github.io/physical_ideation/" },
+      { icon:"🚀", title:"컴맹탈출 교육용 웹앱", desc:"컴퓨터 기초 역량을 키우는 교육용 웹앱", url:"https://trmoo.github.io/commeng/" },
+    ]
+  },
+  { cat:"학습 도구", color:"#ff7a59", soft:"#ffe9e0", dot:"#ff7a59",
+    items:[
+      { icon:"🔢", title:"10진수-2진수 변환학습기", desc:"진법 변환 원리를 직접 익히는 학습 도구", url:"https://trmoo.github.io/binary-converter/" },
+      { icon:"🧩", title:"나만의 클래스 설계실", desc:"객체지향 클래스 설계를 연습하는 도구", url:"https://trmoo.github.io/object-oriented/" },
+      { icon:"📈", title:"연관분석 연습장", desc:"연관 규칙 분석 개념을 연습하는 도구", url:"https://trmoo.github.io/association-analysis/" },
+    ]
+  },
+];
+
+const sectionsEl = document.getElementById('sections');
+const filtersEl = document.getElementById('filters');
+const emptyEl = document.getElementById('empty');
+const qEl = document.getElementById('q');
+
+let activeCat = "전체";
+
+// build filter chips
+const cats = ["전체", ...DATA.map(d=>d.cat)];
+filtersEl.innerHTML = cats.map(c=>`<button class="chip${c==="전체"?" active":""}" data-cat="${c}">${c}</button>`).join("");
+filtersEl.addEventListener('click', e=>{
+  const btn = e.target.closest('.chip'); if(!btn) return;
+  activeCat = btn.dataset.cat;
+  [...filtersEl.children].forEach(ch=>ch.classList.toggle('active', ch===btn));
+  render();
+});
+
+qEl.addEventListener('input', render);
+
+function render(){
+  const q = qEl.value.trim().toLowerCase();
+  sectionsEl.innerHTML = "";
+  let total = 0;
+
+  DATA.forEach(group=>{
+    if(activeCat!=="전체" && activeCat!==group.cat) return;
+    const items = group.items.filter(it=>
+      !q || it.title.toLowerCase().includes(q) || it.desc.toLowerCase().includes(q)
+    );
+    if(items.length===0) return;
+    total += items.length;
+
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    sec.innerHTML = `
+      <div class="section-head">
+        <span class="dot" style="background:${group.dot}"></span>
+        <h2>${group.cat}</h2>
+        <span class="count">${items.length}</span>
+      </div>
+      <div class="grid"></div>`;
+    const grid = sec.querySelector('.grid');
+    items.forEach(it=>{
+      const a = document.createElement('a');
+      a.className = 'card';
+      a.href = it.url; a.target = "_blank"; a.rel = "noopener";
+      a.style.setProperty('--accent', group.color);
+      a.style.setProperty('--accent-soft', group.soft);
+      a.innerHTML = `
+        <div class="icon">${it.icon}</div>
+        <h3>${it.title}</h3>
+        <p>${it.desc}</p>
+        <span class="go">바로가기
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </span>
+        <div class="url">${it.url.replace('https://','')}</div>`;
+      grid.appendChild(a);
+    });
+    sectionsEl.appendChild(sec);
+  });
+
+  emptyEl.style.display = total===0 ? 'block' : 'none';
+}
+
+render();
+</script>
+</body>
+</html>
