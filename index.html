@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -136,7 +137,7 @@
 
   <footer>
     <div>© 티쳐무(무무) · 정보교육 웹 자료 모음</div>
-    <div style="margin-top:6px;opacity:.8">모든 자료는 GitHub Pages(trmoo.github.io)에서 제공됩니다.</div>
+    <div style="margin-top:6px;opacity:.8">자료는 GitHub Pages(trmoo.github.io)와 Google Apps Script 웹앱으로 제공됩니다.</div>
   </footer>
 </div>
 
@@ -157,6 +158,7 @@ const DATA = [
       { icon:"🔌", title:"피지컬컴퓨팅 도구 가이드", desc:"피지컬 컴퓨팅 도구 선택·활용 아이디어 가이드", url:"https://trmoo.github.io/physical_ideation/" },
       { icon:"🚀", title:"컴맹탈출 교육용 웹앱", desc:"컴퓨터 기초 역량을 키우는 교육용 웹앱", url:"https://trmoo.github.io/commeng/" },
       { icon:"🌐", title:"API 실습실", desc:"주소를 부르면 자료가 온다 — 공공 API로 데이터 수집하기", url:"https://trmoo.github.io/api-practice/" },
+      { icon:"🛠️", title:"앱스 스크립트로 웹앱 만들기", desc:"고등학교 정보 실습을 위한 앱스 스크립트 웹앱 제작 실습실", url:"https://trmoo.github.io/apps_script_pract/" },
     ]
   },
   { cat:"학습 도구", color:"#ff7a59", soft:"#ffe9e0", dot:"#ff7a59",
@@ -166,6 +168,13 @@ const DATA = [
       { icon:"📈", title:"연관분석 연습장", desc:"연관 규칙 분석 개념을 연습하는 도구", url:"https://trmoo.github.io/association-analysis/" },
       { icon:"🎲", title:"랜덤 자리 뽑기", desc:"교실 자리를 뽑고 무작위의 공정성을 확인하는 도구", url:"https://trmoo.github.io/class-seats/" },
       { icon:"🗺️", title:"전국 학과 지도", desc:"전국 408개 대학 학과를 계열과 이름으로 묶어 보는 진학 상담 도구", url:"https://trmoo.github.io/major-map/" },
+    ]
+  },
+  { cat:"탐구 과제(Apps Script)", color:"#10b981", soft:"#e3f7ef", dot:"#10b981",
+    items:[
+      { icon:"🗂️", title:"공공데이터 수집 기록장", desc:"공공데이터를 수집하고 과정을 기록하는 탐구 활동지", url:"https://script.google.com/a/macros/goedu.kr/s/AKfycbxJVWlS-MkqY9qrGWXkSDJTMpK1I1YZqTxfWebvQGKjXu52EpEdDrnLeNJfVjMpI0Wj/exec" },
+      { icon:"🧱", title:"자료구조 실습실", desc:"자료구조 개념을 직접 다뤄보는 탐구 실습 웹앱", url:"https://script.google.com/macros/s/AKfycbxRQE1gsVEMSch3Y0Jh7-dPIpOwfIQHYOxHQy8xf6dAqcj-jbF8YDROEwxv-aSYg6FSmw/exec" },
+      { icon:"📉", title:"빅데이터 학습실", desc:"데이터 과학 학습지 기반의 빅데이터 탐구 활동실", url:"https://script.google.com/macros/s/AKfycbxRiE6fEyDJE4pbjQN3tpJkTC5ZDsZERdwoshGFUkJE_jF6W5QpUDS6N_xeT27KlWkejA/exec" },
     ]
   },
 ];
@@ -188,6 +197,11 @@ filtersEl.addEventListener('click', e=>{
 });
 
 qEl.addEventListener('input', render);
+
+function prettyUrl(url){
+  const bare = url.replace(/^https?:\/\//,'');
+  return bare.length > 46 ? bare.slice(0,43) + '…' : bare;
+}
 
 function render(){
   const q = qEl.value.trim().toLowerCase();
@@ -225,7 +239,7 @@ function render(){
         <span class="go">바로가기
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
         </span>
-        <div class="url">${it.url.replace('https://','')}</div>`;
+        <div class="url">${prettyUrl(it.url)}</div>`;
       grid.appendChild(a);
     });
     sectionsEl.appendChild(sec);
