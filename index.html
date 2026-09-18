@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>티쳐무의 정보교육 포털</title>
+<title>영역으로 찾는 정보 수업 도구함</title>
 <style>
   :root{
     --bg1:#eef4ff;
@@ -121,7 +121,7 @@
 <div class="wrap">
   <header class="hero">
     <span class="badge">📚 티쳐무 · 정보교육 자료실</span>
-    <h1>티쳐무의 <span class="grad">정보교육 포털</span></h1>
+    <h1>영역으로 찾는 <span class="grad">정보 수업 도구함</span></h1>
     <p class="subtitle">웹교과서, 수업교안 노트, 영역별 학습 자료를 한 곳에서. 카드를 클릭하면 새 탭에서 열립니다.</p>
   </header>
 
@@ -175,15 +175,16 @@ const DATA = [
       { icon:"📈", title:"연관분석 연습장", desc:"연관 규칙 분석 개념을 연습하는 도구", url:"https://trmoo.github.io/association-analysis/" },
     ]
   },
-  { cat:"[인공지능] 학습 자료", chip:"인공지능", color:"#d97706", soft:"#fdf1dc", dot:"#d97706",
-    items:[
-      { icon:"🔎", title:"LLM-RAG 실습실", desc:"대규모 언어모델·RAG 개념 실습 공간", url:"https://trmoo.github.io/llm-rag-lab/" },
-    ]
-  },
+  // 영역 칸은 2022 개정 「정보」 교육과정 순서: 컴퓨팅 시스템 → 데이터 → 알고리즘과 프로그래밍 → 인공지능 → 디지털 문화
   { cat:"[알고리즘과 프로그래밍] 학습 자료", chip:"알고리즘과 프로그래밍", color:"#0284c7", soft:"#e0f2fe", dot:"#0284c7",
     items:[
       { icon:"🛠️", title:"앱스 스크립트로 웹앱 만들기", desc:"고등학교 정보 실습을 위한 앱스 스크립트 웹앱 제작 실습실", url:"https://trmoo.github.io/apps_script_pract/" },
       { icon:"🧩", title:"나만의 클래스 설계실", desc:"객체지향 클래스 설계를 연습하는 도구", url:"https://trmoo.github.io/object-oriented/" },
+    ]
+  },
+  { cat:"[인공지능] 학습 자료", chip:"인공지능", color:"#d97706", soft:"#fdf1dc", dot:"#d97706",
+    items:[
+      { icon:"🔎", title:"LLM-RAG 실습실", desc:"대규모 언어모델·RAG 개념 실습 공간", url:"https://trmoo.github.io/llm-rag-lab/" },
     ]
   },
   // 자료가 아직 없는 칸 — soon 글이 「준비 중」 카드로 보인다. 자료를 넣으면 soon 은 지워도 된다.
