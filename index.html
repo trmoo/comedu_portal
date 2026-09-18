@@ -119,7 +119,7 @@
   <header class="hero">
     <span class="badge">📚 티쳐무 · 정보교육 자료실</span>
     <h1>티쳐무의 <span class="grad">정보교육 포털</span></h1>
-    <p class="subtitle">웹교과서, 실습실, 학습 도구를 한 곳에서. 카드를 클릭하면 새 탭에서 열립니다.</p>
+    <p class="subtitle">웹교과서, 수업교안 노트, 영역별 학습 자료를 한 곳에서. 카드를 클릭하면 새 탭에서 열립니다.</p>
   </header>
 
   <div class="toolbar">
@@ -141,45 +141,59 @@
 </div>
 
 <script>
+// 분류: 웹교과서 / 수업교안 노트 / 학습 자료는 2022 개정 「정보」 영역 이름으로 / 제출형 활동지 / 교사·학급 도구
+// cat 은 칸 제목, chip 은 위쪽 거르기 단추에 보이는 짧은 이름이다.
 const DATA = [
-  { cat:"웹교과서", color:"#4f7cff", soft:"#eaf0ff", dot:"#4f7cff",
+  { cat:"웹교과서", chip:"웹교과서", color:"#4f7cff", soft:"#eaf0ff", dot:"#4f7cff",
     items:[
       { icon:"📊", title:"데이터 과학 웹교과서", desc:"데이터 과학 과목을 위한 온라인 교과서", url:"https://trmoo.github.io/22hs-ds/" },
       { icon:"🤖", title:"인공지능 기초 웹교과서", desc:"인공지능 기초 과목을 위한 온라인 교과서", url:"https://trmoo.github.io/22hs-ai/" },
       { icon:"💻", title:"프로그래밍 웹교과서", desc:"프로그래밍 과목을 위한 온라인 교과서", url:"https://trmoo.github.io/22hs-programming/" },
     ]
   },
-  { cat:"노트 · 실습실", color:"#8b5cf6", soft:"#f0eafe", dot:"#8b5cf6",
+  { cat:"수업교안 노트", chip:"수업교안 노트", color:"#8b5cf6", soft:"#f0eafe", dot:"#8b5cf6",
     items:[
       { icon:"📝", title:"티쳐무의 정보노트 실습실", desc:"정보 과목 학습 노트와 실습 공간", url:"https://trmoo.github.io/informatics_trmoo/" },
       { icon:"🧠", title:"티쳐무의 인공지능 기초 노트", desc:"인공지능 기초 학습 노트", url:"https://trmoo.github.io/aiBasics_trmoo/" },
-      { icon:"🔎", title:"LLM-RAG 실습실", desc:"대규모 언어모델·RAG 개념 실습 공간", url:"https://trmoo.github.io/llm-rag-lab/" },
-      { icon:"🔌", title:"피지컬컴퓨팅 도구 가이드", desc:"피지컬 컴퓨팅 도구 선택·활용 아이디어 가이드", url:"https://trmoo.github.io/physical_ideation/" },
-      { icon:"🚀", title:"컴맹탈출 교육용 웹앱", desc:"컴퓨터 기초 역량을 키우는 교육용 웹앱", url:"https://trmoo.github.io/commeng/" },
-      { icon:"🌐", title:"API 실습실", desc:"주소를 부르면 자료가 온다 — 공공 API로 데이터 수집하기", url:"https://trmoo.github.io/api-practice/" },
-      { icon:"🛠️", title:"앱스 스크립트로 웹앱 만들기", desc:"고등학교 정보 실습을 위한 앱스 스크립트 웹앱 제작 실습실", url:"https://trmoo.github.io/apps_script_pract/" },
-      { icon:"📚", title:"PyDataset 데이터 도감", desc:"파이썬 연습용 데이터 757개를 주제별로 찾아보는 도감", url:"https://trmoo.github.io/pydataset-catalog/" },
     ]
   },
-  { cat:"학습 도구", color:"#ff7a59", soft:"#ffe9e0", dot:"#ff7a59",
+  { cat:"[컴퓨팅 시스템] 학습 자료", chip:"컴퓨팅 시스템", color:"#0d9488", soft:"#dff5f2", dot:"#0d9488",
+    items:[
+      { icon:"🚀", title:"컴맹탈출 교육용 웹앱", desc:"컴퓨터 기초 역량을 키우는 교육용 웹앱", url:"https://trmoo.github.io/commeng/" },
+      { icon:"🔌", title:"피지컬컴퓨팅 도구 가이드", desc:"피지컬 컴퓨팅 도구 선택·활용 아이디어 가이드", url:"https://trmoo.github.io/physical_ideation/" },
+    ]
+  },
+  { cat:"[데이터] 학습 자료", chip:"데이터", color:"#ff7a59", soft:"#ffe9e0", dot:"#ff7a59",
     items:[
       { icon:"🔢", title:"10진수-2진수 변환학습기", desc:"진법 변환 원리를 직접 익히는 학습 도구", url:"https://trmoo.github.io/binary-converter/" },
-      { icon:"🧩", title:"나만의 클래스 설계실", desc:"객체지향 클래스 설계를 연습하는 도구", url:"https://trmoo.github.io/object-oriented/" },
-      { icon:"📈", title:"연관분석 연습장", desc:"연관 규칙 분석 개념을 연습하는 도구", url:"https://trmoo.github.io/association-analysis/" },
+      { icon:"🌐", title:"API 실습실", desc:"주소를 부르면 자료가 온다 — 공공 API로 데이터 수집하기", url:"https://trmoo.github.io/api-practice/" },
       { icon:"🐧", title:"펭귄 데이터로 전처리 연습하기", desc:"결측치·이상치·정규화 명령어를 빈칸 채우며 브라우저에서 실행해 보는 도구", url:"https://trmoo.github.io/penguins_analysis/" },
+      { icon:"📚", title:"PyDataset 데이터 도감", desc:"파이썬 연습용 데이터 757개를 주제별로 찾아보는 도감", url:"https://trmoo.github.io/pydataset-catalog/" },
+      { icon:"📈", title:"연관분석 연습장", desc:"연관 규칙 분석 개념을 연습하는 도구", url:"https://trmoo.github.io/association-analysis/" },
     ]
   },
-  { cat:"학급 도구", color:"#e8488a", soft:"#fde8f1", dot:"#e8488a",
+  { cat:"[인공지능] 학습 자료", chip:"인공지능", color:"#d97706", soft:"#fdf1dc", dot:"#d97706",
     items:[
-      { icon:"🎲", title:"랜덤 자리 뽑기", desc:"교실 자리를 뽑고 무작위의 공정성을 확인하는 도구", url:"https://trmoo.github.io/class-seats/" },
-      { icon:"🗺️", title:"전국 학과 지도", desc:"전국 408개 대학 학과를 계열과 이름으로 묶어 보는 진학 상담 도구", url:"https://trmoo.github.io/major-map/" },
+      { icon:"🔎", title:"LLM-RAG 실습실", desc:"대규모 언어모델·RAG 개념 실습 공간", url:"https://trmoo.github.io/llm-rag-lab/" },
     ]
   },
-  { cat:"탐구 과제(Apps Script)", color:"#10b981", soft:"#e3f7ef", dot:"#10b981",
+  { cat:"[알고리즘과 프로그래밍] 학습 자료", chip:"알고리즘과 프로그래밍", color:"#0284c7", soft:"#e0f2fe", dot:"#0284c7",
+    items:[
+      { icon:"🛠️", title:"앱스 스크립트로 웹앱 만들기", desc:"고등학교 정보 실습을 위한 앱스 스크립트 웹앱 제작 실습실", url:"https://trmoo.github.io/apps_script_pract/" },
+      { icon:"🧩", title:"나만의 클래스 설계실", desc:"객체지향 클래스 설계를 연습하는 도구", url:"https://trmoo.github.io/object-oriented/" },
+    ]
+  },
+  { cat:"제출형 활동지 (Apps Script)", chip:"제출형 활동지", color:"#10b981", soft:"#e3f7ef", dot:"#10b981",
     items:[
       { icon:"🗂️", title:"공공데이터 수집 기록장", desc:"공공데이터를 수집하고 과정을 기록하는 탐구 활동지", url:"https://script.google.com/a/macros/goedu.kr/s/AKfycbxJVWlS-MkqY9qrGWXkSDJTMpK1I1YZqTxfWebvQGKjXu52EpEdDrnLeNJfVjMpI0Wj/exec" },
       { icon:"🧱", title:"자료구조 실습실", desc:"자료구조 개념을 직접 다뤄보는 탐구 실습 웹앱", url:"https://script.google.com/macros/s/AKfycbxRQE1gsVEMSch3Y0Jh7-dPIpOwfIQHYOxHQy8xf6dAqcj-jbF8YDROEwxv-aSYg6FSmw/exec" },
       { icon:"📉", title:"빅데이터 학습실", desc:"데이터 과학 학습지 기반의 빅데이터 탐구 활동실", url:"https://script.google.com/macros/s/AKfycbxRiE6fEyDJE4pbjQN3tpJkTC5ZDsZERdwoshGFUkJE_jF6W5QpUDS6N_xeT27KlWkejA/exec" },
+    ]
+  },
+  { cat:"교사·학급 도구", chip:"교사·학급 도구", color:"#e8488a", soft:"#fde8f1", dot:"#e8488a",
+    items:[
+      { icon:"🎲", title:"랜덤 자리 뽑기", desc:"교실 자리를 뽑고 무작위의 공정성을 확인하는 도구", url:"https://trmoo.github.io/class-seats/" },
+      { icon:"🗺️", title:"전국 학과 지도", desc:"전국 408개 대학 학과를 계열과 이름으로 묶어 보는 진학 상담 도구", url:"https://trmoo.github.io/major-map/" },
     ]
   },
 ];
@@ -192,8 +206,9 @@ const qEl = document.getElementById('q');
 let activeCat = "전체";
 
 // build filter chips
-const cats = ["전체", ...DATA.map(d=>d.cat)];
-filtersEl.innerHTML = cats.map(c=>`<button class="chip${c==="전체"?" active":""}" data-cat="${c}">${c}</button>`).join("");
+// 단추에는 짧은 이름(chip)을 보여 주고, 거를 때는 칸 제목(cat)으로 맞춘다
+const cats = [{cat:"전체", chip:"전체"}, ...DATA.map(d=>({cat:d.cat, chip:d.chip || d.cat}))];
+filtersEl.innerHTML = cats.map(c=>`<button class="chip${c.cat==="전체"?" active":""}" data-cat="${c.cat}">${c.chip}</button>`).join("");
 filtersEl.addEventListener('click', e=>{
   const btn = e.target.closest('.chip'); if(!btn) return;
   activeCat = btn.dataset.cat;
