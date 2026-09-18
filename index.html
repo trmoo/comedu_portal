@@ -102,6 +102,9 @@
     color:var(--accent,#4f7cff);
   }
   .card .url{font-size:11.5px;color:#9aa4bd;margin-top:8px;word-break:break-all;}
+  .card.soon{border-style:dashed;box-shadow:none;background:#fbfcfe;}
+  .card.soon:hover{transform:none;box-shadow:none;border-color:var(--line);}
+  .card.soon::before{opacity:.35;}
 
   .empty{text-align:center;color:var(--ink-soft);padding:60px 0;font-size:16px;display:none;}
 
@@ -183,6 +186,12 @@ const DATA = [
       { icon:"🧩", title:"나만의 클래스 설계실", desc:"객체지향 클래스 설계를 연습하는 도구", url:"https://trmoo.github.io/object-oriented/" },
     ]
   },
+  // 자료가 아직 없는 칸 — soon 글이 「준비 중」 카드로 보인다. 자료를 넣으면 soon 은 지워도 된다.
+  { cat:"[디지털 문화] 학습 자료", chip:"디지털 문화", color:"#475569", soft:"#eef1f5", dot:"#475569",
+    soon:"정보 보호·정보보안·디지털 윤리, 디지털 기술과 진로를 다루는 학습 자료를 준비하고 있습니다.",
+    items:[
+    ]
+  },
   { cat:"제출형 활동지 (Apps Script)", chip:"제출형 활동지", color:"#10b981", soft:"#e3f7ef", dot:"#10b981",
     items:[
       { icon:"🗂️", title:"공공데이터 수집 기록장", desc:"공공데이터를 수집하고 과정을 기록하는 탐구 활동지", url:"https://script.google.com/a/macros/goedu.kr/s/AKfycbxJVWlS-MkqY9qrGWXkSDJTMpK1I1YZqTxfWebvQGKjXu52EpEdDrnLeNJfVjMpI0Wj/exec" },
@@ -233,7 +242,9 @@ function render(){
     const items = group.items.filter(it=>
       !q || it.title.toLowerCase().includes(q) || it.desc.toLowerCase().includes(q)
     );
-    if(items.length===0) return;
+    // 자료가 아직 없는 칸은 검색하지 않을 때만 「준비 중」 카드로 보여 준다
+    const soon = group.items.length===0 && group.soon && !q;
+    if(items.length===0 && !soon) return;
     total += items.length;
 
     const sec = document.createElement('div');
@@ -242,10 +253,19 @@ function render(){
       <div class="section-head">
         <span class="dot" style="background:${group.dot}"></span>
         <h2>${group.cat}</h2>
-        <span class="count">${items.length}</span>
+        <span class="count">${soon ? "준비 중" : items.length}</span>
       </div>
       <div class="grid"></div>`;
     const grid = sec.querySelector('.grid');
+    if(soon){
+      const box = document.createElement('div');
+      box.className = 'card soon';
+      box.style.setProperty('--accent', group.color);
+      box.style.setProperty('--accent-soft', group.soft);
+      box.innerHTML = `<div class="icon">🛡️</div><h3>준비 중입니다</h3><p>${group.soon}</p>`;
+      grid.appendChild(box);
+      total += 1;
+    }
     items.forEach(it=>{
       const a = document.createElement('a');
       a.className = 'card';
