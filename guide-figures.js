@@ -80,6 +80,13 @@
       '<circle cx="' + (x + 34) + '" cy="' + (y + 17) + '" r="5" fill="#fbbf24"/>' +
       '<circle cx="' + (x + 50) + '" cy="' + (y + 17) + '" r="5" fill="#34d399"/>';
   }
+  // 연필(수정) 아이콘 — ✏ 글자는 글꼴에 따라 누운 막대처럼 보여서 선으로 직접 그린다
+  function PENCIL(cx, cy) {
+    return '<g transform="translate(' + cx + ' ' + cy + ') rotate(-45)">' +
+      '<rect x="-8" y="-3.5" width="13" height="7" rx="1" fill="' + C.soft + '"/>' +
+      '<path d="M5 -3.5L10 0L5 3.5Z" fill="' + C.soft + '"/>' +
+      '<rect x="-12" y="-3.5" width="3.5" height="7" rx="1" fill="' + C.hl + '"/></g>';
+  }
   function MENU(x, y, w, h) { return SHADOW(x, y, w, h, 8) + R(x, y, w, h, { fill: '#fff', stroke: C.line, r: 8 }); }
   // 펼친 목록에서 고를 한 줄
   function PICK(x, y, w, label, n) {
@@ -283,7 +290,10 @@
   }
 
   // ── 그림 3-3 · 웹 앱 URL 복사 → 학생에게 ─────────────────────────
-  function url() {
+  // o = { field: 휴대폰 화면의 입력 칸 이름, btn: 단추 글자 } — 설문지는 「학번/이름」·「제출하기」
+  function url(o) {
+    o = o || {};
+    var field = o.field || '학번', btnLabel = o.btn || '다음';
     var s = '';
     var x0 = 16, y0 = 14, w0 = 450, h0 = 312;
     s += PANEL(x0, y0, w0, h0);
@@ -314,14 +324,112 @@
     s += R(px, py, pw, ph, { fill: C.ink, r: 22 }) + R(px + 7, py + 14, pw - 14, ph - 28, { fill: '#fff', r: 14 });
     s += R(px + 7, py + 14, pw - 14, 44, { fill: C.green, r: 14 }) + R(px + 7, py + 44, pw - 14, 14, { fill: C.green, r: 0 });
     s += R(px + 20, py + 30, 70, 8, { fill: 'rgba(255,255,255,.75)', r: 4 });
-    s += T(px + 20, py + 90, '학번', { size: 12, weight: 700 });
+    s += T(px + 20, py + 90, field, { size: 12, weight: 700 });
     s += R(px + 18, py + 98, pw - 36, 28, { fill: '#fff', stroke: C.line, r: 6 }) + T(px + 26, py + 117, '20101', { size: 12, fill: '#9aa4bd' });
-    s += R(px + 18, py + 138, pw - 36, 30, { fill: C.green, r: 8 }) + T(px + pw / 2, py + 158, '다음', { size: 12.5, weight: 700, fill: '#fff', anchor: 'middle' });
+    s += R(px + 18, py + 138, pw - 36, 30, { fill: C.green, r: 8 }) + T(px + pw / 2, py + 158, btnLabel, { size: 12.5, weight: 700, fill: '#fff', anchor: 'middle' });
     s += BAR(px + 18, py + 186, pw - 50, 7) + BAR(px + 18, py + 200, pw - 70, 7);
     s += N('2', px - 4, py + 4);
     s += T(px + pw / 2, py + ph + 24, '학생 화면', { size: 12.5, weight: 700, fill: C.soft, anchor: 'middle' });
     return SVG(720, 340, '웹 앱 URL 을 복사해 학생에게 주기', s);
   }
 
-  root.GuideFigures = { menu: menu, auth: auth, editor: editor, deploy: deploy, url: url };
+  // ── 설문지용 그림 A · 편집기에서 과목 이름 찾아 바꾸기 ───────────────
+  // 코드 한 줄 안에서 바꿀 낱말만 눈에 띄게 — tspan 은 글자 폭을 몰라도 차례로 이어 붙는다
+  function CODE(x, y, line, word) {
+    var parts = word ? String(line).split(word) : [String(line)];
+    var inner = '';
+    parts.forEach(function (p, i) {
+      if (i > 0) inner += '<tspan fill="#c2410c" font-weight="800" text-decoration="underline">' + esc(word) + '</tspan>';
+      if (p) inner += '<tspan>' + esc(p) + '</tspan>';
+    });
+    return '<text x="' + x + '" y="' + y + '" font-size="13" fill="' + C.ink + '"' +
+      ' font-family="Consolas,\'D2Coding\',\'Malgun Gothic\',monospace">' + inner + '</text>';
+  }
+  // o = { word: 지금 과목 이름, to: 바꿀 과목 이름(보기) }
+  function edit(o) {
+    o = o || {};
+    var word = o.word || '프로그래밍', to = o.to || '데이터 과학';
+    var s = WIN(16, 14, 688, 372);
+    s += R(30, 58, 26, 26, { fill: '#e8f0fe', r: 6 }) + T(43, 75, '</>', { size: 10.5, weight: 800, fill: C.blue, anchor: 'middle' });
+    s += T(64, 69, 'Apps Script', { size: 11, fill: C.soft }) + BAR(64, 75, 110, 7);
+    s += LINE(16, 96, 704, 96, C.line);
+
+    // 왼쪽: 파일 두 개 — 둘 다 고친다
+    s += T(42, 122, '파일', { size: 13, weight: 800, fill: C.soft });
+    s += R(26, 132, 132, 30, { fill: C.greenSoft, r: 6 }) + T(38, 152, 'Code.gs', { size: 13.5, weight: 700 });
+    s += R(26, 168, 132, 30, { fill: '#fff', r: 6 }) + T(38, 188, 'Index.html', { size: 13.5, weight: 700 });
+    s += HLN(26, 132, 132, 66, '1');
+    s += LINE(170, 96, 170, 386, C.line);
+
+    // 도구 막대: 되돌리기 · 다시 · 저장 · 실행
+    var tx = 186, ty = 106;
+    s += T(tx, ty + 19, '↶', { size: 16, fill: C.soft }) + T(tx + 26, ty + 19, '↷', { size: 16, fill: C.soft });
+    s += R(tx + 52, ty, 30, 28, { fill: '#fff', stroke: C.line, r: 6 }) + T(tx + 67, ty + 19, '💾', { size: 14, anchor: 'middle' });
+    s += HLN(tx + 52, ty, 30, 28, '4');
+    s += T(tx + 98, ty + 19, '▶ 실행', { size: 13, fill: C.soft }) + T(tx + 160, ty + 19, '디버그', { size: 13, fill: C.soft });
+
+    // Code.gs 13~20번째 줄 — QUESTIONS
+    var lines = [
+      [0, 'var QUESTIONS = ['],
+      [1, "'진로 희망과 그 이유',"],
+      [1, "'" + word + " 과목을 선택한 이유',"],
+      [1, "'" + word + " 과목에서 나만의 목표',"],
+      [1, "'… 왜 " + word + "을 배우려고 하는지?',"],
+      [1, "'… 기억에 남은 수업',"],
+      [1, "'앞으로 " + word + " 수업에 임하는 각오 한마디!'"],
+      [0, '];']
+    ];
+    lines.forEach(function (l, i) {
+      var y = 170 + i * 26;
+      s += T(186, y, String(13 + i), { size: 12, fill: '#9aa4bd' });
+      s += CODE(216 + l[0] * 22, y, l[1], word);
+    });
+
+    // 찾아 바꾸기 창 (Ctrl+H)
+    var fx = 444, fy = 136, fw = 250, fh = 84;
+    s += SHADOW(fx, fy, fw, fh, 8) + R(fx, fy, fw, fh, { fill: '#fff', stroke: C.line, r: 8 });
+    s += R(fx + 10, fy + 10, 150, 26, { fill: '#fff', stroke: C.blue, r: 4 }) + T(fx + 18, fy + 28, word, { size: 13, weight: 700 });
+    s += T(fx + 170, fy + 28, '1/7', { size: 12, fill: C.soft });
+    s += R(fx + 10, fy + 46, 150, 26, { fill: '#fff', stroke: C.line, r: 4 }) + T(fx + 18, fy + 64, to, { size: 13, weight: 700, fill: C.green });
+    s += R(fx + 166, fy + 46, 76, 26, { fill: C.bar, stroke: C.line, r: 4 }) + T(fx + 204, fy + 64, '모두 바꾸기', { size: 11.5, weight: 700, anchor: 'middle' });
+    s += HLN(fx + 10, fy + 10, 150, 62, '2');
+    s += HLN(fx + 166, fy + 46, 76, 26, '3', 'tr');
+    s += T(fx + fw / 2, fy + fh + 22, 'Ctrl+H 로 열린다', { size: 12, weight: 700, fill: C.hl, anchor: 'middle' });
+    return SVG(720, 400, '편집기에서 Code.gs 와 Index.html 의 「' + word + '」를 찾아 바꾸고 저장하기', s);
+  }
+
+  // ── 설문지용 그림 B · 고친 뒤 다시 배포 (배포 관리 → 수정 → 새 버전) ──────
+  function manage() {
+    var s = '';
+    var x0 = 16, y0 = 14, w0 = 688, h0 = 332;
+    s += PANEL(x0, y0, w0, h0);
+    s += T(x0 + 24, y0 + 40, '배포 관리', { size: 18, weight: 800 });
+    s += T(x0 + w0 - 28, y0 + 40, '✕', { size: 16, fill: C.soft, anchor: 'middle' });
+    s += LINE(x0, y0 + 60, x0 + w0, y0 + 60);
+
+    // 왼쪽: 지금 쓰고 있는 배포
+    s += T(x0 + 24, y0 + 92, '활성', { size: 13, weight: 700, fill: C.soft });
+    s += R(x0 + 16, y0 + 104, 200, 56, { fill: C.greenSoft, r: 8 });
+    s += T(x0 + 30, y0 + 127, '웹 앱', { size: 14, weight: 800 }) + BAR(x0 + 30, y0 + 138, 140, 7);
+    s += LINE(x0 + 232, y0 + 60, x0 + 232, y0 + h0 - 64);
+
+    // 오른쪽: 연필(수정) → 버전 「새 버전」
+    var rx = x0 + 256, w = 404;
+    s += T(rx, y0 + 92, '구성', { size: 14, weight: 700, fill: C.soft });
+    var px = x0 + w0 - 24 - 36, py = y0 + 72;
+    s += R(px, py, 36, 36, { fill: '#fff', stroke: C.line, r: 18 }) + PENCIL(px + 18, py + 18);
+    s += HLN(px, py, 36, 36, '1');
+    s += T(rx, y0 + 142, '버전', { size: 12.5, fill: C.soft });
+    s += SELECT(rx, y0 + 150, w, '새 버전') + HLN(rx, y0 + 150, w, 36, '2', 'tr');
+    s += T(rx, y0 + 212, '설명', { size: 12.5, fill: C.soft });
+    s += R(rx, y0 + 220, w, 34, { fill: '#fff', stroke: C.line, r: 6 }) + T(rx + 12, y0 + 242, '예: 문항 수정 (안 적어도 됩니다)', { size: 13, fill: '#9aa4bd' });
+
+    var by = y0 + h0 - 52;
+    s += LINE(x0, by - 12, x0 + w0, by - 12);
+    s += BTN(x0 + w0 - 24 - 86 - 12 - 76, by, 76, '취소', false);
+    s += BTN(x0 + w0 - 24 - 86, by, 86, '배포', true) + HLN(x0 + w0 - 24 - 86, by, 86, 36, '3', 'tr');
+    return SVG(720, 360, '배포 관리: 연필(수정), 버전 「새 버전」, 배포 — 학생 주소는 그대로', s);
+  }
+
+  root.GuideFigures = { menu: menu, auth: auth, editor: editor, deploy: deploy, url: url, edit: edit, manage: manage };
 })(typeof window !== 'undefined' ? window : globalThis);

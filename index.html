@@ -298,6 +298,21 @@
   .fig figcaption{margin-top:7px;font-size:14px;line-height:1.6;color:var(--ink-soft);}
   .fig figcaption b{color:var(--ink);}
 
+  /* 설문지 안내(과목·문항 고치기)에 쓰는 소제목 · 강조 상자 · 코드 상자 */
+  .s-body h4{margin:18px 0 6px;font-size:16px;font-weight:800;}
+  .callout{margin:10px 0 14px;padding:12px 16px;border-radius:12px;font-size:15px;line-height:1.65;}
+  .callout ul{margin:6px 0 0;padding-left:20px;}
+  .callout li{margin:3px 0;}
+  .callout.warn{background:#fff8eb;border:1.5px solid #f3d9a4;}
+  .callout.strong{background:#fef2f2;border:1.5px solid #fca5a5;}
+  pre.code{
+    margin:8px 0 10px;padding:12px 14px;border-radius:12px;background:#0f172a;color:#e2e8f0;
+    font:13.5px/1.65 ui-monospace,Consolas,"D2Coding","Malgun Gothic",monospace;overflow-x:auto;white-space:pre;
+  }
+  pre.code .cm{color:#94a3b8;}
+  pre.code .hl{background:rgba(251,191,36,.22);color:#fde68a;border-radius:3px;}
+  .s-body code{padding:1px 6px;border-radius:6px;background:#f1f4fa;border:1px solid #dbe2ee;font:13.5px ui-monospace,Consolas,monospace;}
+
   @media (max-width:520px){
     .wrap{padding:28px 16px 48px;}
     .grid{grid-template-columns:1fr;}
@@ -443,6 +458,13 @@ const DATA = [
           sheet:"https://docs.google.com/spreadsheets/d/1K4bw1kxPL8bFdl8xUsTI_VoOi3PrkciPDMf-aeWapCI/copy",
           test:"https://script.google.com/macros/s/AKfycbyJUcwACPBUGEf8ma5Mx6suHFjjeb1pmtU6sEJWJCHQnRM1Rv5ttOpsuATBbHpfEMOudg/exec",
           menu:"데이터 과학 영향력 탐구", setup:"① 시트 준비하기", reset:"⑦ 비밀번호 초기화" } },
+      // 설문지는 시트 메뉴가 없다(kind:"survey") — 안내가 「과목·문항 고치기 → 웹 앱 배포(권한 승인 포함)」 차례로 바뀐다.
+      // subject: 찾아 바꾸기로 바꿀 과목 이름 · count: Index.html 의 문항 수 (for 문의 i < 6)
+      { icon:"📋", title:"프로그래밍 수업 사전 설문지", desc:"진로 희망·과목 선택 이유·목표·흥미·탐구 주제·각오를 받는 첫 시간 사전 설문. 과목 이름과 문항을 바꿔 다른 수업에도 쓸 수 있어요",
+        teacher:{ key:"pre-survey", kind:"survey",
+          sheet:"https://docs.google.com/spreadsheets/d/17muxJA6RmwXaHk38ZxHckzaoFDSvPHuilIijKULco7s/copy",
+          test:"https://script.google.com/macros/s/AKfycby4zSu6P20gK1Ph0Y05dKzMePqpsHJfvQJB2qMm9D0LbE5qpcS-1_qvazN59jyDGPloDg/exec",
+          subject:"프로그래밍", count:6 } },
     ]
   },
   { cat:"교사·학급 도구", chip:"교사·학급 도구", color:"#e8488a", soft:"#fde8f1", dot:"#e8488a",
@@ -619,6 +641,7 @@ function panelHtml(it){
   </div>
   <div class="p-body">
     <p class="p-desc">${esc(it.desc)}</p>
+    ${t.kind === 'survey' ? `<p class="hint">과목 이름과 문항을 바꾸는 방법, 배포할 때 <b>유형 선택을 「웹 앱」</b>으로 하는 것까지 안내 화면에서 그림으로 알려 드려요.</p>` : ''}
     ${copyChoice}
     ${testChoice}
     <button type="button" class="link-like" data-guide="${esc(t.key)}">사본을 만들기 전에 배포 방법부터 읽어 보기 →</button>
@@ -660,21 +683,222 @@ function fig(name, arg, caption){
   return `<figure class="fig"><div class="fig-art">${GF[name](arg)}</div><figcaption>${caption}</figcaption></figure>`;
 }
 
+// 단계 하나 — 제목 · 본문 · 「마쳤어요」 체크
+function stepHtml(i, title, body, doneLabel){
+  return `
+  <section class="step" data-step="${i}">
+    <div class="num">${i + 1}</div>
+    <div class="s-body">
+      <h3>${title}</h3>
+      ${body}
+      <label class="check"><input type="checkbox" data-done="${i}"> ${doneLabel || '이 단계를 마쳤어요'}</label>
+    </div>
+  </section>`;
+}
+
+// 권한 승인 차례 — 승인 창이 어디서 뜨는지(첫 줄)가 앱마다 다르다
+function authHtml(first, last){
+  return `
+      <ol>
+        <li>${first}</li>
+        <li><b>「Google에서 확인하지 않은 앱」</b> 경고가 뜨면 왼쪽 아래 <span class="ui">고급</span> → <span class="ui">…(으)로 이동(안전하지 않음)</span>을 누릅니다.</li>
+        <li>권한 목록 옆에 <b>체크 상자</b>가 있으면 <b>모두 체크</b>(「모두 선택」)하고 <span class="ui">계속</span>(또는 <span class="ui">허용</span>)을 누릅니다. 하나라도 빼면 학생이 저장할 때 멈춰요.</li>
+        ${last ? `<li>${last}</li>` : ''}
+      </ol>
+      ${fig('auth', null,
+        `① <b>고급</b> → ② <b>○○(으)로 이동(안전하지 않음)</b> → ③ <b>모두 선택</b> → ④ <b>계속</b>. 파란 「안전한 페이지로 돌아가기」를 누르면 승인이 멈춰요. 체크 상자가 없는 화면이면 <b>허용</b>을 누르세요.`)}`;
+}
+
+function whyHtml(t){
+  return `
+      <details class="why">
+        <summary>왜 「안전하지 않음」이라고 나오나요?</summary>
+        <p>구글의 앱 심사를 받지 않은 스크립트라면 누구에게나 나오는 경고입니다. 이 앱은 방금 선생님 드라이브에 만든 <b>선생님 소유의 사본</b>이고, 선생님 계정으로 선생님 시트에 학생 답을 적기 위해 스프레드시트 권한을 묻습니다.${t.drive ? ' 학생이 올린 캡처 그림을 선생님 드라이브 폴더에 저장하므로 드라이브 권한도 묻습니다.' : ''} 티쳐무에게는 아무것도 전달되지 않습니다.</p>
+      </details>`;
+}
+
+// 두 칸 설정표 — 실행은 「나」, 액세스는 「모든 사용자」
+function settingHtml(who){
+  return `
+          <table class="setting">
+            <tr><th>다음 사용자 인증 정보로 실행</th><td><b>나</b> (선생님 이메일)</td></tr>
+            <tr><th>액세스 권한이 있는 사용자</th><td><b>모든 사용자</b></td></tr>
+          </table>
+          <p class="hint">「Google 계정이 있는 모든 사용자」가 아니라 그냥 <b>「모든 사용자」</b>입니다. ${who} 목록에 「모든 사용자」가 없으면 학교 계정 제한이니, 개인 Gmail 계정으로 1단계부터 다시 하세요.</p>`;
+}
+
+// 1단계 — 사본 만들기
+function copyStepBody(it, fromCopy){
+  const url = copyUrl(it.teacher);
+  if(!url) return `
+      <div class="actions"><button type="button" class="btn primary" disabled>📄 원본 준비 중</button></div>
+      <p class="hint">티쳐무 선생님이 이 활동지의 배포용 원본 시트를 준비하고 있어요. 아래 절차는 미리 읽어 두셔도 됩니다.</p>`;
+  return `
+      <div class="actions">
+        <a class="btn primary" href="${url}" target="_blank" rel="noopener">📄 사본 만들기 화면 ${fromCopy ? '다시 ' : ''}열기 ${ARROW}</a>
+        <button type="button" class="btn" data-copy="${url}">🔗 링크 복사</button>
+      </div>
+      <input class="link-box" type="text" readonly value="${url}" aria-label="사본 만들기 링크">
+      <p class="hint">구글에 로그인한 상태여야 합니다. 시트에 붙은 Apps Script 코드도 함께 복사되고, 사본 이름은 마음대로 바꿔도 돼요 (예: 「${esc(it.title)} 2학년 3반」).
+        다른 계정(개인 Gmail 등)으로 만들려면 링크를 복사해, 그 계정으로 로그인한 창에 붙여 넣으세요.</p>`;
+}
+
+// 2단계(보통 앱) — 사본 시트의 앱 메뉴에서 시트 준비 + 권한 승인
+function menuStepBody(it){
+  const t = it.teacher;
+  const menu = esc(t.menu), setup = esc(t.setup);
+  return `
+      <div class="path">
+        <span class="where">시트 위쪽 메뉴 줄 오른쪽 끝(도움말 옆)</span>
+        <span class="ui">${menu}</span><span class="sep">›</span><span class="ui">${setup}</span>
+      </div>
+      <p class="hint">메뉴가 안 보이면 <b>새로 고침(F5)</b> 뒤 5초쯤 기다리세요. 사본을 처음 열면 조금 늦게 나타납니다.</p>
+      ${fig('menu', { title: it.title, menu: t.menu, setup: t.setup },
+        `① 메뉴 줄 오른쪽 끝의 <b>「${menu}」</b> → ② 맨 위 <b>「${setup}」</b>`)}
+      ${authHtml('<b>「승인 필요」</b> 창이 뜨면 <span class="ui">확인</span>(또는 <span class="ui">계속</span>)을 누르고 내 구글 계정을 고릅니다.',
+        '준비를 마쳤다는 안내창이 뜨면 끝입니다. 승인 뒤 아무 안내가 없으면 메뉴를 <b>한 번 더</b> 누르세요.')}
+      ${whyHtml(t)}`;
+}
+
+// 2단계(설문지) — 과목 이름과 문항을 우리 수업에 맞게
+function editStepBody(it){
+  const t = it.teacher;
+  const sub = esc(t.subject || '프로그래밍');
+  const n = Number(t.count) || 6;
+  return `
+      <p class="hint">${sub} 수업에 그대로 쓰신다면 이 단계는 건너뛰고 체크만 하세요.</p>
+      <p>사본 시트에서 <span class="ui">확장 프로그램</span> › <span class="ui">Apps Script</span>를 열면, 왼쪽 「파일」에
+        <span class="ui">Code.gs</span>(응답을 시트에 적는 코드)와 <span class="ui">Index.html</span>(학생이 보는 화면)이 있습니다.
+        <b>파일 이름은 바꾸지 마세요</b> — 코드가 이름으로 서로를 찾습니다.</p>
+      ${fig('edit', { word: t.subject || '프로그래밍' },
+        `① 왼쪽 <b>Code.gs</b>(다음엔 <b>Index.html</b>) → ② <b>Ctrl+H</b> 로 「${sub}」 → 우리 과목 → ③ <b>모두 바꾸기</b> → ④ <b>저장</b>(Ctrl+S)`)}
+
+      <h4>① 과목 이름 바꾸기 — 가장 쉬운 방법</h4>
+      <ol>
+        <li><span class="ui">Code.gs</span>를 누르고 <b>Ctrl+H</b>(찾아 바꾸기) → 위 칸에 <b>${sub}</b>, 아래 칸에 우리 과목(예: <b>데이터 과학</b>) → <span class="ui">모두 바꾸기</span>.</li>
+        <li><span class="ui">Index.html</span>에서도 똑같이 합니다. 화면 제목·문항·브라우저 탭 제목·시트 머리글이 한꺼번에 바뀝니다.</li>
+        <li><b>조사</b>만 확인하세요 — 「왜 ${sub}을 배우려고 하는지?」 문항은 과목 이름 바로 뒤에 「을」이 붙어 있어, 받침 없는 과목이면 「정보을」처럼 어색해집니다(두 파일에 한 곳씩).</li>
+        <li>「정보/컴퓨터/AI 과목…」, 「이전 수업(정보/데이터과학/인공지능 기초)」처럼 다른 과목 이름이 들어간 문항은 우리 수업에 맞게 직접 고쳐 주세요.</li>
+        <li>두 파일 모두 <b>Ctrl+S</b>(또는 💾)로 저장합니다.</li>
+      </ol>
+
+      <h4>② 문항 글 바꾸기 (개수는 그대로)</h4>
+      <p>문항은 <b>두 곳</b>에 같은 차례로 적혀 있습니다. 두 곳을 함께 고치세요.</p>
+<pre class="code"><span class="cm">// Code.gs — 시트 첫 줄(머리글)에 들어갈 문항 이름</span>
+var QUESTIONS = [
+  '진로 희망과 그 이유',
+  '<span class="hl">${sub} 과목을 선택한 이유</span>',
+  …
+];
+
+<span class="cm">&lt;!-- Index.html — 학생 화면에 보이는 문항 (&lt;br&gt; 은 줄바꿈) --&gt;</span>
+&lt;div class="q"&gt;<span class="hl">${sub} 과목을&lt;br&gt;선택한 이유</span>&lt;/div&gt;
+&lt;textarea name="q1" …&gt;&lt;/textarea&gt;</pre>
+      <p class="hint">Code.gs 의 <b>n번째</b> 문항이 Index.html 의 <code>name="q(n−1)"</code> 칸과 짝입니다 — 두 번째 문항이 <code>q1</code>. 차례가 어긋나면 답이 엉뚱한 열에 저장돼요.</p>
+
+      <details class="why">
+        <summary>③ 문항 수를 늘리거나 줄이려면</summary>
+        <ol>
+          <li><b>Index.html</b> — 문항 칸 하나는 <code>&lt;div class="box …"&gt;</code>부터 짝이 맞는 <code>&lt;/div&gt;</code>까지입니다. 늘릴 때는 한 칸을 통째로 복사해 붙이고, 줄일 때는 통째로 지웁니다. 새 칸의 class 에 <code>b-interest</code>를 넣으면 두 칸 너비로 한 줄을 차지합니다.</li>
+          <li>칸 속 <code>name="q0"</code>, <code>"q1"</code>, … 번호를 <b>0부터 빠짐없이</b> 차례로 다시 매깁니다.</li>
+          <li>Index.html 아래쪽 <code>for (var i = 0; i &lt; ${n}; i++)</code> 의 <b>${n}</b>을 새 문항 수로 바꿉니다.</li>
+          <li><b>Code.gs</b>의 <code>QUESTIONS</code>에도 같은 차례로 문항을 더하거나 뺍니다. 저장하는 쪽은 QUESTIONS 개수만큼 적으므로 따로 고칠 곳이 없습니다.</li>
+        </ol>
+      </details>
+
+      <div class="callout warn">⚠ <b>시트 머리글은 첫 제출 때 한 번만 만들어집니다.</b> 사본에는 원본의 「설문 응답」 시트(지금 문항으로 된 머리글)가 이미 들어 있어요.
+        문항을 바꿨다면 그 시트의 <b>첫 줄을 새 문항으로 고치거나, 「설문 응답」 탭을 지우세요</b> — 지우면 첫 제출 때 새 머리글로 다시 만들어집니다.</div>`;
+}
+
+// 3단계 — 웹 앱으로 배포하고 주소를 학생에게
+function deployStepBody(it){
+  const t = it.teacher;
+  if(t.kind === 'survey') return `
+      <ol>
+        <li>2단계에서 연 편집기에서(아직 안 열었다면 사본 시트의 <span class="ui">확장 프로그램</span> › <span class="ui">Apps Script</span>) 오른쪽 위 파란 <span class="ui">배포</span> › <span class="ui">새 배포</span>를 누릅니다.</li>
+      </ol>
+      ${fig('editor', null,
+        `① <b>확장 프로그램</b> → ② <b>Apps Script</b> → 새 탭의 편집기에서 ③ <b>배포</b> → ④ <b>새 배포</b>`)}
+      <div class="callout strong">⭐ <b>「유형 선택」은 반드시 「웹 앱」</b> — 「유형 선택」 옆 톱니바퀴 ⚙ 를 누르면 <b>웹 앱 · API 실행 파일 · 부가기능 · 라이브러리</b>가 나옵니다. <b>웹 앱</b>을 골라야 학생에게 줄 주소(웹 앱 URL)가 생깁니다. 다른 것을 고르면 주소가 나오지 않아요.</div>
+      <ol start="2">
+        <li>⚙ › <span class="ui">웹 앱</span>을 고르고, 두 칸을 이렇게 맞춥니다.${settingHtml('학생은 구글 로그인 없이 설문을 엽니다.')}</li>
+      </ol>
+      ${fig('deploy', null,
+        `① <b>톱니바퀴 ⚙</b> → ② <b>웹 앱</b> → ③ 실행은 <b>나</b> → ④ 액세스는 <b>모든 사용자</b> → ⑤ <b>배포</b>`)}
+      <h4>처음 배포할 때는 권한을 승인합니다</h4>
+      <p>이 설문지는 시트 메뉴가 없어서, <span class="ui">배포</span>를 누를 때 권한을 묻습니다.</p>
+      ${authHtml('<span class="ui">액세스 승인</span> 단추가 나오면 누르고 내 구글 계정을 고릅니다.',
+        '승인이 끝나면 배포가 마무리되고 <b>웹 앱 URL</b>이 나옵니다.')}
+      ${whyHtml(t)}
+      <ol start="3">
+        <li>나온 <b>웹 앱 URL</b>을 <span class="ui">복사</span>해 학생에게 줍니다 (클래스룸 · QR 코드 등).</li>
+      </ol>
+      ${fig('url', { field: '학번/이름', btn: '제출하기' },
+        `① 웹 앱 URL 옆 <b>복사</b> → ② 클래스룸·QR 코드로 학생에게. 학생은 구글 로그인 없이 설문을 엽니다.`)}
+      <p class="hint">✅ <b>확인하기</b> — 시크릿 창(Ctrl+Shift+N)에서 그 주소를 열어 시험 삼아 한 번 제출해 보세요. 사본 시트의 <b>「설문 응답」 탭 맨 아래</b>에 한 줄이 생기면 성공입니다(시험 줄은 지워도 됩니다).</p>
+
+      <h4>나중에 문항을 또 고쳤다면 — 「새 버전」으로 다시 배포</h4>
+      <p>편집기에서 고쳐 저장만 하면 학생 화면은 <b>바뀌지 않습니다</b>. <span class="ui">배포</span> › <span class="ui">배포 관리</span> → ✏️(수정) → 버전 <b>「새 버전」</b> → <span class="ui">배포</span>. 학생 주소는 그대로예요. <b>[새 배포]를 또 만들면 주소가 바뀝니다.</b></p>
+      ${fig('manage', null, `① 연필(<b>수정</b>) → ② 버전 <b>「새 버전」</b> → ③ <b>배포</b>`)}`;
+
+  return `
+      <ol>
+        <li>사본 시트 메뉴에서 <span class="ui">확장 프로그램</span> › <span class="ui">Apps Script</span>를 눌러 편집기를 엽니다. (새 탭으로 열려요)</li>
+        <li>편집기 오른쪽 위 파란 <span class="ui">배포</span> › <span class="ui">새 배포</span>를 누릅니다.</li>
+      </ol>
+      ${fig('editor', null,
+        `① <b>확장 프로그램</b> → ② <b>Apps Script</b> → 새 탭의 편집기에서 ③ <b>배포</b> → ④ <b>새 배포</b>`)}
+      <ol start="3">
+        <li>「유형 선택」 옆 톱니바퀴 ⚙ › <span class="ui">웹 앱</span>을 고르고, 두 칸을 이렇게 맞춥니다.${settingHtml('학생은 구글 로그인 없이 학번으로 들어와요.')}</li>
+      </ol>
+      ${fig('deploy', null,
+        `① <b>톱니바퀴 ⚙</b> → ② <b>웹 앱</b> → ③ 실행은 <b>나</b> → ④ 액세스는 <b>모든 사용자</b> → ⑤ <b>배포</b>`)}
+      <ol start="4">
+        <li><span class="ui">배포</span>를 누릅니다. 권한을 또 물으면 2단계처럼 승인하세요.</li>
+        <li>나온 <b>웹 앱 URL</b>을 <span class="ui">복사</span>해 학생에게 줍니다 (클래스룸 · QR 코드 등).</li>
+      </ol>
+      ${fig('url', null,
+        `① 웹 앱 URL 옆 <b>복사</b> → ② 클래스룸·QR 코드로 학생에게. 학생은 구글 로그인 없이 학번으로 들어옵니다.`)}
+      <p class="hint">✅ <b>확인하기</b> — 시크릿 창(Ctrl+Shift+N)에 그 주소를 붙여 넣어 학번 입력 화면이 뜨면 성공입니다.</p>
+      <p class="hint">주소를 잃어버리면 편집기의 <span class="ui">배포</span> › <span class="ui">배포 관리</span>에서 다시 볼 수 있어요. 코드를 고치지 않았다면 다시 배포할 일은 없습니다. <b>[새 배포]를 또 만들면 주소가 새로 생겨요.</b></p>`;
+}
+
+function notesHtml(it){
+  const t = it.teacher;
+  const test = `<li>학생에게는 꼭 <b>3단계에서 받은 선생님 주소</b>를 주세요. 도구함의 <b>테스트 페이지</b>는 둘러보기용이라, 거기에 낸 답은 선생님 시트가 아니라 티쳐무 선생님의 시험용 시트로 갑니다.</li>`;
+  const items = t.kind === 'survey' ? [
+    test,
+    `<li>응답은 사본 시트의 <b>「설문 응답」</b> 탭에 한 줄씩 쌓입니다(제출 시각 · 학번/이름 · 문항 차례). 같은 학생이 여러 번 내면 여러 줄이 되니 <b>맨 아래 줄이 가장 최근</b> 응답이에요.</li>`,
+    `<li>사본은 <b>만든 날의 버전</b> 그대로입니다. 편집기에서 고친 뒤에는 <b>「새 버전」으로 다시 배포</b>해야 학생 화면에 반영됩니다.</li>`,
+    `<li>© 티쳐무 · 학교 수업 목적으로 이용해 주세요. <b>과목과 문항은 자유롭게 고쳐 쓰셔도 됩니다.</b> 고친 것을 다시 나누는 일은 먼저 문의해 주세요.</li>`,
+  ] : [
+    test,
+    `<li>학생 답과 계정은 <b>선생님 시트에만</b> 저장됩니다. 비밀번호는 암호화(해시)해 저장하므로 선생님도 볼 수 없어요. 잊은 학생은 <span class="ui">${esc(t.menu)}</span> › <span class="ui">${esc(t.reset)}</span>로 풀어 주세요.</li>`,
+    `<li>사본은 <b>만든 날의 버전</b> 그대로입니다. 이 활동지가 새로 고쳐져도 선생님 사본은 바뀌지 않으니, 새 학기에는 사본을 새로 만들어 쓰세요.</li>`,
+    `<li>© 티쳐무 · 학교 수업 목적으로 이용해 주세요. 화면 아래 저작권 표시는 그대로 두어 주시고, 재배포나 고쳐서 다시 나누는 일은 먼저 문의해 주세요.</li>`,
+  ];
+  return `
+  <div class="g-notes">
+    <h3>⚠ 꼭 알아 두세요</h3>
+    <ul>${items.join('\n      ')}</ul>
+  </div>`;
+}
+
 function guidePageHtml(it, fromCopy){
   const t = it.teacher;
   const url = copyUrl(t);
-  const menu = esc(t.menu), setup = esc(t.setup), reset = esc(t.reset);
-  const step1 = url ? `
-        <div class="actions">
-          <a class="btn primary" href="${url}" target="_blank" rel="noopener">📄 사본 만들기 화면 ${fromCopy ? '다시 ' : ''}열기 ${ARROW}</a>
-          <button type="button" class="btn" data-copy="${url}">🔗 링크 복사</button>
-        </div>
-        <input class="link-box" type="text" readonly value="${url}" aria-label="사본 만들기 링크">
-        <p class="hint">구글에 로그인한 상태여야 합니다. 시트에 붙은 Apps Script 코드도 함께 복사되고, 사본 이름은 마음대로 바꿔도 돼요 (예: 「${esc(it.title)} 2학년 3반」).
-          다른 계정(개인 Gmail 등)으로 만들려면 링크를 복사해, 그 계정으로 로그인한 창에 붙여 넣으세요.</p>`
-    : `
-        <div class="actions"><button type="button" class="btn primary" disabled>📄 원본 준비 중</button></div>
-        <p class="hint">티쳐무 선생님이 이 활동지의 배포용 원본 시트를 준비하고 있어요. 아래 절차는 미리 읽어 두셔도 됩니다.</p>`;
+  const survey = t.kind === 'survey';
+  const sub = esc(t.subject || '프로그래밍');
+  // 앱마다 단계 차례가 다르다 — 설문지는 시트 메뉴가 없어 「시트 준비」 대신 「과목·문항 고치기」, 권한 승인은 배포 때
+  const steps = survey ? [
+    ['새 탭에서 <span class="ui">사본 만들기</span>를 누릅니다.', copyStepBody(it, fromCopy)],
+    [`(${sub} 수업이 아니라면) 과목 이름과 문항을 우리 수업에 맞게 고칩니다.`, editStepBody(it), '이 단계를 마쳤어요 (고칠 것이 없으면 그냥 체크)'],
+    ['<span class="ui">배포</span> → <span class="ui">새 배포</span> → 유형 선택 <span class="ui">웹 앱</span>으로 배포하고, 나온 주소를 학생에게 줍니다.', deployStepBody(it)],
+  ] : [
+    ['새 탭에서 <span class="ui">사본 만들기</span>를 누릅니다.', copyStepBody(it, fromCopy)],
+    [`사본 시트의 앱 메뉴에서 <span class="ui">${esc(t.setup)}</span>를 누르고 권한을 승인합니다.`, menuStepBody(it)],
+    ['<span class="ui">확장 프로그램</span> → <span class="ui">Apps Script</span> → <span class="ui">배포</span> → <span class="ui">새 배포</span> → <span class="ui">웹 앱</span>을 고릅니다. 실행은 「나」, 액세스는 「모든 사용자」로 두고, 나온 주소를 학생에게 줍니다.', deployStepBody(it)],
+  ];
 
   return `
   <div class="gp-top">
@@ -695,8 +919,18 @@ function guidePageHtml(it, fromCopy){
 
   ${fromCopy ? `<div class="gp-banner" role="status">✅ 새 탭에 <b>사본 만들기</b> 화면을 열었어요. 그 탭에서 파란 <b>[사본 만들기]</b>를 누른 뒤, 이 화면의 <b>2단계</b>부터 따라 하세요.</div>` : ''}
 
+  ${survey ? `<div class="callout strong">📌 <b>이 설문지만 다른 점</b>
+    <ul>
+      <li>배포할 때 <b>「유형 선택」은 반드시 「웹 앱」</b>입니다. 그래야 학생에게 줄 주소가 생깁니다.</li>
+      <li>${sub} 수업이 아니라면 <b>2단계에서 과목 이름과 문항</b>을 바꿔 쓰세요. 찾아 바꾸기 한 번이면 됩니다.</li>
+      <li>시트 메뉴가 없어서 <b>권한 승인은 배포할 때</b> 합니다.</li>
+    </ul>
+  </div>` : ''}
+
   <ul class="g-pre">
-    <li>이 활동지는 <b>구글 시트에 붙은 Apps Script 앱</b>입니다. 사본을 만들면 선생님 드라이브에 <b>선생님만의 앱</b>이 생기고, 학생 답은 <b>선생님 시트에만</b> 저장됩니다.</li>
+    <li>${survey
+      ? '이 설문지는 <b>구글 시트에 붙은 Apps Script 앱</b>입니다. 사본을 만들면 선생님 드라이브에 <b>선생님만의 설문지</b>가 생기고, 응답은 <b>선생님 시트의 「설문 응답」 탭</b>에만 쌓입니다.'
+      : '이 활동지는 <b>구글 시트에 붙은 Apps Script 앱</b>입니다. 사본을 만들면 선생님 드라이브에 <b>선생님만의 앱</b>이 생기고, 학생 답은 <b>선생님 시트에만</b> 저장됩니다.'}</li>
     <li>학교(교육청) 계정은 3단계에서 <b>「모든 사용자」</b>가 안 보일 수 있어요. 그럴 땐 <b>개인 Gmail 계정</b>으로 하세요.</li>
     <li>그림은 실제 화면을 단순하게 다시 그린 안내도예요. 주황 번호 차례대로 누르면 됩니다. 구글 화면이 바뀌면 모양이 조금 다를 수 있어요.</li>
   </ul>
@@ -706,101 +940,28 @@ function guidePageHtml(it, fromCopy){
     <span class="txt"></span>
   </div>
 
-  <section class="step" data-step="0">
-    <div class="num">1</div>
-    <div class="s-body">
-      <h3>새 탭에서 <span class="ui">사본 만들기</span>를 누릅니다.</h3>
-      ${step1}
-      <label class="check"><input type="checkbox" data-done="0"> 이 단계를 마쳤어요</label>
-    </div>
-  </section>
-
-  <section class="step" data-step="1">
-    <div class="num">2</div>
-    <div class="s-body">
-      <h3>사본 시트의 앱 메뉴에서 <span class="ui">${setup}</span>를 누르고 권한을 승인합니다.</h3>
-      <div class="path">
-        <span class="where">시트 위쪽 메뉴 줄 오른쪽 끝(도움말 옆)</span>
-        <span class="ui">${menu}</span><span class="sep">›</span><span class="ui">${setup}</span>
-      </div>
-      <p class="hint">메뉴가 안 보이면 <b>새로 고침(F5)</b> 뒤 5초쯤 기다리세요. 사본을 처음 열면 조금 늦게 나타납니다.</p>
-      ${fig('menu', { title: it.title, menu: t.menu, setup: t.setup },
-        `① 메뉴 줄 오른쪽 끝의 <b>「${menu}」</b> → ② 맨 위 <b>「${setup}」</b>`)}
-      <ol>
-        <li><b>「승인 필요」</b> 창이 뜨면 <span class="ui">확인</span>(또는 <span class="ui">계속</span>)을 누르고 내 구글 계정을 고릅니다.</li>
-        <li><b>「Google에서 확인하지 않은 앱」</b> 경고가 뜨면 왼쪽 아래 <span class="ui">고급</span> → <span class="ui">…(으)로 이동(안전하지 않음)</span>을 누릅니다.</li>
-        <li>권한 목록 옆에 <b>체크 상자</b>가 있으면 <b>모두 체크</b>(「모두 선택」)하고 <span class="ui">계속</span>(또는 <span class="ui">허용</span>)을 누릅니다. 하나라도 빼면 학생이 저장할 때 멈춰요.</li>
-        <li>준비를 마쳤다는 안내창이 뜨면 끝입니다. 승인 뒤 아무 안내가 없으면 메뉴를 <b>한 번 더</b> 누르세요.</li>
-      </ol>
-      ${fig('auth', null,
-        `① <b>고급</b> → ② <b>○○(으)로 이동(안전하지 않음)</b> → ③ <b>모두 선택</b> → ④ <b>계속</b>. 파란 「안전한 페이지로 돌아가기」를 누르면 승인이 멈춰요. 체크 상자가 없는 화면이면 <b>허용</b>을 누르세요.`)}
-      <details class="why">
-        <summary>왜 「안전하지 않음」이라고 나오나요?</summary>
-        <p>구글의 앱 심사를 받지 않은 스크립트라면 누구에게나 나오는 경고입니다. 이 앱은 방금 선생님 드라이브에 만든 <b>선생님 소유의 사본</b>이고, 선생님 계정으로 선생님 시트에 학생 답을 적기 위해 스프레드시트 권한을 묻습니다.${t.drive ? ' 학생이 올린 캡처 그림을 선생님 드라이브 폴더에 저장하므로 드라이브 권한도 묻습니다.' : ''} 티쳐무에게는 아무것도 전달되지 않습니다.</p>
-      </details>
-      <label class="check"><input type="checkbox" data-done="1"> 이 단계를 마쳤어요</label>
-    </div>
-  </section>
-
-  <section class="step" data-step="2">
-    <div class="num">3</div>
-    <div class="s-body">
-      <h3><span class="ui">확장 프로그램</span> → <span class="ui">Apps Script</span> → <span class="ui">배포</span> → <span class="ui">새 배포</span> → <span class="ui">웹 앱</span>을 고릅니다. 실행은 「나」, 액세스는 「모든 사용자」로 두고, 나온 주소를 학생에게 줍니다.</h3>
-      <ol>
-        <li>사본 시트 메뉴에서 <span class="ui">확장 프로그램</span> › <span class="ui">Apps Script</span>를 눌러 편집기를 엽니다. (새 탭으로 열려요)</li>
-        <li>편집기 오른쪽 위 파란 <span class="ui">배포</span> › <span class="ui">새 배포</span>를 누릅니다.</li>
-      </ol>
-      ${fig('editor', null,
-        `① <b>확장 프로그램</b> → ② <b>Apps Script</b> → 새 탭의 편집기에서 ③ <b>배포</b> → ④ <b>새 배포</b>`)}
-      <ol start="3">
-        <li>「유형 선택」 옆 톱니바퀴 ⚙ › <span class="ui">웹 앱</span>을 고르고, 두 칸을 이렇게 맞춥니다.
-          <table class="setting">
-            <tr><th>다음 사용자 인증 정보로 실행</th><td><b>나</b> (선생님 이메일)</td></tr>
-            <tr><th>액세스 권한이 있는 사용자</th><td><b>모든 사용자</b></td></tr>
-          </table>
-          <p class="hint">「Google 계정이 있는 모든 사용자」가 아니라 그냥 <b>「모든 사용자」</b>입니다. 학생은 구글 로그인 없이 학번으로 들어와요. 목록에 「모든 사용자」가 없으면 학교 계정 제한이니, 개인 Gmail 계정으로 1단계부터 다시 하세요.</p>
-        </li>
-      </ol>
-      ${fig('deploy', null,
-        `① <b>톱니바퀴 ⚙</b> → ② <b>웹 앱</b> → ③ 실행은 <b>나</b> → ④ 액세스는 <b>모든 사용자</b> → ⑤ <b>배포</b>`)}
-      <ol start="4">
-        <li><span class="ui">배포</span>를 누릅니다. 권한을 또 물으면 2단계처럼 승인하세요.</li>
-        <li>나온 <b>웹 앱 URL</b>을 <span class="ui">복사</span>해 학생에게 줍니다 (클래스룸 · QR 코드 등).</li>
-      </ol>
-      ${fig('url', null,
-        `① 웹 앱 URL 옆 <b>복사</b> → ② 클래스룸·QR 코드로 학생에게. 학생은 구글 로그인 없이 학번으로 들어옵니다.`)}
-      <p class="hint">✅ <b>확인하기</b> — 시크릿 창(Ctrl+Shift+N)에 그 주소를 붙여 넣어 학번 입력 화면이 뜨면 성공입니다.</p>
-      <p class="hint">주소를 잃어버리면 편집기의 <span class="ui">배포</span> › <span class="ui">배포 관리</span>에서 다시 볼 수 있어요. 코드를 고치지 않았다면 다시 배포할 일은 없습니다. <b>[새 배포]를 또 만들면 주소가 새로 생겨요.</b></p>
-      <label class="check"><input type="checkbox" data-done="2"> 이 단계를 마쳤어요</label>
-    </div>
-  </section>
+  ${steps.map((s, i) => stepHtml(i, s[0], s[1], s[2])).join('\n')}
 
   <div class="g-finish" role="status">🎉 끝! 이제 학생에게 <b>3단계에서 받은 선생님 주소</b>를 알려 주세요.</div>
 
-  <div class="g-notes">
-    <h3>⚠ 꼭 알아 두세요</h3>
-    <ul>
-      <li>학생에게는 꼭 <b>3단계에서 받은 선생님 주소</b>를 주세요. 도구함의 <b>테스트 페이지</b>는 둘러보기용이라, 거기에 낸 답은 선생님 시트가 아니라 티쳐무 선생님의 시험용 시트로 갑니다.</li>
-      <li>학생 답과 계정은 <b>선생님 시트에만</b> 저장됩니다. 비밀번호는 암호화(해시)해 저장하므로 선생님도 볼 수 없어요. 잊은 학생은 <span class="ui">${menu}</span> › <span class="ui">${reset}</span>로 풀어 주세요.</li>
-      <li>사본은 <b>만든 날의 버전</b> 그대로입니다. 이 활동지가 새로 고쳐져도 선생님 사본은 바뀌지 않으니, 새 학기에는 사본을 새로 만들어 쓰세요.</li>
-      <li>© 티쳐무 · 학교 수업 목적으로 이용해 주세요. 화면 아래 저작권 표시는 그대로 두어 주시고, 재배포나 고쳐서 다시 나누는 일은 먼저 문의해 주세요.</li>
-    </ul>
-  </div>
+  ${notesHtml(it)}
 
   <div class="gp-bottom"><button type="button" class="btn" data-home>← 도구함으로 돌아가기</button></div>`;
 }
 
 function updateProgress(key){
   const done = PROGRESS[key];
-  const n = done.filter(Boolean).length;
-  guideView.querySelectorAll('.step').forEach((sec, i)=>{
-    sec.classList.toggle('done', done[i]);
+  const steps = guideView.querySelectorAll('.step');
+  const total = steps.length;
+  const n = done.slice(0, total).filter(Boolean).length;
+  steps.forEach((sec, i)=>{
+    sec.classList.toggle('done', !!done[i]);
     sec.querySelector('.num').textContent = done[i] ? '✓' : String(i + 1);
-    sec.querySelector('[data-done]').checked = done[i];
+    sec.querySelector('[data-done]').checked = !!done[i];
   });
-  guideView.querySelector('.g-progress .bar span').style.width = (n / 3 * 100) + '%';
-  guideView.querySelector('.g-progress .txt').textContent = `3단계 중 ${n}단계 마침`;
-  guideView.querySelector('.g-finish').classList.toggle('show', n === 3);
+  guideView.querySelector('.g-progress .bar span').style.width = (n / total * 100) + '%';
+  guideView.querySelector('.g-progress .txt').textContent = `${total}단계 중 ${n}단계 마침`;
+  guideView.querySelector('.g-finish').classList.toggle('show', n === total);
 }
 
 // 안내 화면으로 넘어간다. push: 뒤로 가기로 카드 목록에 돌아올 수 있게 방문 기록을 남긴다
