@@ -16,9 +16,16 @@
     --brand-soft:#eaf0ff;
     --shadow:0 10px 30px rgba(38,63,140,.10);
     --shadow-hover:0 18px 44px rgba(38,63,140,.20);
+    /* 제출형 활동지(선생님용 사본)에 쓰는 초록 — 글씨를 얹는 곳은 대비가 충분한 진한 쪽(--g-dark)을 쓴다 */
+    --g:#10b981;
+    --g-dark:#047857;
+    --g-soft:#e3f7ef;
+    --g-line:#bfe8d6;
   }
   *{box-sizing:border-box;}
+  [hidden]{display:none !important;}
   html,body{margin:0;padding:0;}
+  html.locked{overflow:hidden;}
   body{
     font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,-apple-system,sans-serif;
     color:var(--ink);
@@ -77,6 +84,13 @@
   .section-head .dot{width:11px;height:11px;border-radius:4px;}
   .section-head h2{font-size:19px;margin:0;font-weight:800;letter-spacing:-.01em;}
   .section-head .count{color:var(--ink-soft);font-size:14px;font-weight:600;}
+  /* 칸 머리 밑 안내 한 줄 (지금은 제출형 활동지 칸에만 있다) */
+  .section-note{
+    margin:-4px 0 16px;padding:13px 16px;border-radius:14px;
+    background:#fff;border:1px dashed var(--g-line);
+    color:var(--ink-soft);font-size:14.5px;line-height:1.65;word-break:keep-all;
+  }
+  .section-note b{color:var(--ink);}
 
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
 
@@ -106,36 +120,224 @@
   .card.soon:hover{transform:none;box-shadow:none;border-color:var(--line);}
   .card.soon::before{opacity:.35;}
 
+  /* 제출형 활동지 카드 — 카드 안에 단추가 둘이라 <a> 로 감쌀 수 없다.
+     제목 단추(.stretch)의 ::after 를 카드 전체로 넓혀 「카드 아무 데나 누르면 고르는 창」을 지키고,
+     아래 두 단추만 그 위(z-index:2)에 올린다. */
+  .card .stretch{
+    color:inherit;text-decoration:none;font:inherit;background:none;border:0;padding:0;
+    cursor:pointer;text-align:left;letter-spacing:inherit;
+  }
+  .card .stretch::after{content:"";position:absolute;inset:0;z-index:1;border-radius:18px;}
+  .card .stretch:focus{outline:none;}
+  .card .stretch:focus-visible::after{outline:3px solid var(--accent);outline-offset:-3px;}
+  .card-actions{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:8px;}
+  .card-actions .ca{
+    flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    min-height:46px;padding:9px 12px;border-radius:12px;border:1.5px solid var(--g);
+    background:#fff;color:var(--g-dark);font-size:14px;font-weight:800;text-decoration:none;
+    transition:box-shadow .15s,transform .15s,background .15s;
+  }
+  .card-actions .ca.primary{background:var(--g-dark);border-color:var(--g-dark);color:#fff;}
+  .card-actions .ca:hover{box-shadow:0 8px 18px rgba(16,185,129,.25);transform:translateY(-1px);}
+  .card-actions .ca:focus-visible{outline:3px solid var(--g);outline-offset:2px;}
+  .card-actions .ca.wait{border-style:dashed;color:var(--ink-soft);cursor:default;}
+
   .empty{text-align:center;color:var(--ink-soft);padding:60px 0;font-size:16px;display:none;}
 
   footer{text-align:center;margin-top:46px;color:var(--ink-soft);font-size:13px;line-height:1.7;}
   footer a{color:var(--brand);text-decoration:none;}
 
+  /* ─── 카드를 누르면 뜨는 창: 교사용 사본 / 테스트 페이지 고르기 ─── */
+  dialog.panel{
+    width:min(620px, calc(100vw - 20px));max-height:calc(100vh - 28px);
+    padding:0;border:0;border-radius:20px;overflow:auto;
+    color:var(--ink);background:#fff;box-shadow:0 30px 80px rgba(20,30,60,.35);
+    word-break:keep-all;overscroll-behavior:contain;
+  }
+  dialog.panel::backdrop{background:rgba(20,28,50,.55);}
+  dialog.panel[open]{position:fixed;inset:0;margin:auto;}
+  .p-head{display:flex;align-items:center;gap:14px;padding:18px 22px;border-bottom:1px solid var(--line);}
+  .g-icon{
+    width:48px;height:48px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;
+    font-size:26px;background:var(--g-soft);
+  }
+  .g-titles{flex:1;min-width:0;}
+  .g-kicker{font-size:13px;font-weight:800;color:var(--g-dark);}
+  .p-head h2{margin:2px 0 0;font-size:21px;font-weight:800;letter-spacing:-.01em;}
+  .g-close{
+    flex:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);
+    background:#fff;font-size:18px;cursor:pointer;color:var(--ink-soft);
+  }
+  .g-close:hover{border-color:var(--ink-soft);color:var(--ink);}
+  .p-body{padding:16px 22px 22px;font-size:15.5px;line-height:1.65;}
+  .p-desc{margin:0 0 6px;color:var(--ink-soft);}
+  .choice{
+    display:flex;align-items:center;gap:14px;margin:12px 0;padding:16px 18px;
+    border-radius:16px;border:1.5px solid var(--line);background:#fff;
+    color:var(--ink);text-decoration:none;transition:border-color .15s,box-shadow .15s,transform .15s;
+  }
+  .choice:hover{border-color:var(--g);box-shadow:0 10px 24px rgba(16,185,129,.18);transform:translateY(-1px);}
+  .choice:focus-visible{outline:3px solid var(--g);outline-offset:2px;}
+  .choice.primary{border-color:var(--g);background:var(--g-soft);}
+  .choice.wait{border-style:dashed;cursor:default;}
+  .choice .c-ico{
+    flex:none;width:50px;height:50px;border-radius:14px;background:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:26px;border:1px solid var(--line);
+  }
+  .choice .c-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;}
+  .choice .c-txt b{font-size:17px;}
+  .choice .c-txt small{font-size:14px;line-height:1.55;color:var(--ink-soft);}
+  .choice .c-go{flex:none;color:var(--g-dark);}
+  .link-like{
+    background:none;border:0;padding:8px 0;font:inherit;font-size:15px;font-weight:700;
+    color:var(--g-dark);cursor:pointer;text-decoration:underline;text-underline-offset:3px;
+  }
+
+  /* ─── 배포까지 따라 하는 안내 화면 (카드 목록 대신 보인다) ─── */
+  .guide-page{max-width:880px;margin:0 auto;font-size:16px;line-height:1.7;word-break:keep-all;}
+  .gp-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:0 0 16px;}
+  .gp-tools{display:flex;flex-wrap:wrap;gap:8px;}
+  .gp-head{
+    display:flex;align-items:center;gap:16px;margin:0 0 16px;padding:22px 24px;
+    border-radius:20px;background:var(--g-dark);color:#fff;box-shadow:var(--shadow);
+  }
+  .gp-head .g-icon{background:rgba(255,255,255,.18);}
+  .gp-head .g-kicker{color:#d1fae5;}
+  .gp-title{margin:2px 0 0;font-size:clamp(22px,4vw,30px);line-height:1.3;font-weight:800;letter-spacing:-.01em;}
+  .gp-banner{
+    margin:0 0 14px;padding:14px 18px;border-radius:14px;
+    background:#fff8eb;border:1.5px solid #f3d9a4;font-weight:600;
+  }
+  .gp-bottom{margin-top:22px;text-align:center;}
+
+  .g-pre{margin:0 0 16px;padding:12px 16px 12px 36px;background:#fff;border:1px solid var(--line);border-radius:14px;}
+  .g-pre li{margin:3px 0;}
+
+  .g-progress{display:flex;align-items:center;gap:12px;margin:6px 0 4px;}
+  .g-progress .bar{flex:1;height:10px;border-radius:99px;background:#e3e8f1;overflow:hidden;}
+  .g-progress .bar span{display:block;height:100%;width:0;background:var(--g);border-radius:99px;transition:width .3s;}
+  .g-progress .txt{font-size:14px;font-weight:700;color:var(--ink-soft);white-space:nowrap;}
+
+  /* 둘째 칸을 minmax(0,1fr) 로 두어야 폭이 좁을 때 그림 칸이 가로로 밀리며 줄어든다
+     (그냥 1fr 이면 그림 최소 폭 560px 만큼 칸이 버텨 휴대폰에서 상자 밖으로 삐져나간다) */
+  .step{
+    display:grid;grid-template-columns:40px minmax(0,1fr);gap:14px;margin:14px 0;padding:18px 18px 16px;
+    border:1.5px solid var(--line);border-radius:18px;background:#fff;transition:border-color .2s,background .2s;
+  }
+  .step .s-body{min-width:0;}
+  .step.done{border-color:var(--g);background:#f5fcf8;}
+  .step .num{
+    width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:var(--g-dark);color:#fff;font-weight:800;font-size:18px;
+  }
+  .step h3{margin:4px 0 10px;font-size:17.5px;line-height:1.55;font-weight:800;}
+  .step ol{margin:6px 0 10px;padding-left:22px;}
+  .step ol li{margin:6px 0;}
+  .ui{
+    display:inline-block;padding:0 8px;margin:1px 0;border-radius:7px;
+    background:#f1f4fa;border:1px solid #dbe2ee;font-weight:700;font-size:.93em;line-height:1.6;
+  }
+  .path{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 10px;}
+  .path .where{font-size:14px;color:var(--ink-soft);margin-right:2px;}
+  .path .sep{color:#9aa4bd;font-weight:800;}
+  .hint{margin:8px 0;font-size:14.5px;color:var(--ink-soft);}
+  .hint b{color:var(--ink);}
+
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 10px;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    min-height:48px;padding:10px 18px;border-radius:12px;
+    border:1.5px solid #cfd8e8;background:#fff;color:var(--ink);
+    font:inherit;font-size:15px;font-weight:800;text-decoration:none;cursor:pointer;transition:.15s;
+  }
+  .btn:hover{border-color:var(--ink-soft);}
+  .btn.primary{background:var(--g-dark);border-color:var(--g-dark);color:#fff;}
+  .btn.primary:hover{background:#065f46;border-color:#065f46;}
+  .btn:disabled{background:#e9edf3;border-color:#e9edf3;color:#5b6785;cursor:not-allowed;}
+  .btn.small{min-height:42px;padding:8px 14px;font-size:14px;}
+  .btn:focus-visible{outline:3px solid var(--g);outline-offset:2px;}
+  .link-box{
+    width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+    background:#f8fafc;color:var(--ink-soft);font-size:13px;font-family:ui-monospace,Consolas,monospace;
+  }
+
+  .setting{width:100%;margin:8px 0 6px;border-collapse:separate;border-spacing:0;
+    border:1px solid var(--g-line);border-radius:12px;overflow:hidden;font-size:15px;}
+  .setting th,.setting td{padding:10px 14px;text-align:left;vertical-align:middle;}
+  .setting th{background:#f6f8fc;font-weight:600;width:56%;}
+  .setting td{background:var(--g-soft);}
+  .setting tr + tr th,.setting tr + tr td{border-top:1px solid var(--g-line);}
+
+  details.why{margin:10px 0;padding:10px 14px;border-radius:12px;background:#f6f8fc;}
+  details.why summary{cursor:pointer;font-weight:700;font-size:14.5px;}
+  details.why p{margin:8px 0 2px;font-size:14.5px;color:var(--ink-soft);}
+
+  .check{
+    display:inline-flex;align-items:center;gap:10px;margin-top:8px;min-height:44px;
+    padding:6px 14px;border-radius:12px;border:1px dashed #cfd8e8;cursor:pointer;
+    font-size:15px;font-weight:700;color:var(--ink-soft);user-select:none;
+  }
+  .check input{width:22px;height:22px;accent-color:var(--g-dark);cursor:pointer;}
+  .step.done .check{border-style:solid;border-color:var(--g);color:var(--g-dark);background:#fff;}
+
+  .g-finish{
+    display:none;margin:4px 0 16px;padding:14px 18px;border-radius:14px;
+    background:var(--g-soft);border:1.5px solid var(--g);font-weight:700;
+  }
+  .g-finish.show{display:block;}
+
+  .g-notes{margin:18px 0 0;padding:14px 18px 10px;border-radius:16px;background:#fff8eb;border:1px solid #f3d9a4;}
+  .g-notes h3{margin:0 0 6px;font-size:16px;color:#7a4b00;}
+  .g-notes ul{margin:0;padding-left:20px;font-size:14.5px;}
+  .g-notes li{margin:6px 0;}
+
+  /* 안내 그림 — 휴대폰에서는 글자가 너무 작아지지 않게 가로로 밀어 보게 한다 */
+  .fig{margin:12px 0 16px;}
+  .fig-art{border:1px solid var(--line);border-radius:14px;overflow-x:auto;background:#fbfcfe;}
+  .fig-art svg{display:block;width:100%;height:auto;min-width:560px;}
+  .fig figcaption{margin-top:7px;font-size:14px;line-height:1.6;color:var(--ink-soft);}
+  .fig figcaption b{color:var(--ink);}
+
   @media (max-width:520px){
     .wrap{padding:28px 16px 48px;}
     .grid{grid-template-columns:1fr;}
+    .p-head{padding:14px 16px;}
+    .p-head h2{font-size:18px;}
+    .p-body{padding:14px 16px 20px;}
+    .choice{padding:14px;gap:12px;}
+    .gp-head{padding:16px 18px;gap:12px;}
+    .step{grid-template-columns:minmax(0,1fr);gap:8px;padding:14px;}
+    .step .num{width:34px;height:34px;font-size:16px;}
+    .setting th{width:auto;}
+    .btn{width:100%;}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="hero">
-    <span class="badge">📚 티쳐무의 정보교육 포털</span>
-    <h1>영역으로 찾는 <span class="grad">정보 수업 도구함</span></h1>
-    <p class="subtitle">웹교과서, 수업교안 노트, 영역별 학습 자료를 한 곳에서. 카드를 클릭하면 새 탭에서 열립니다.</p>
-  </header>
+  <!-- 카드 목록 화면 -->
+  <div id="portalView">
+    <header class="hero">
+      <span class="badge">📚 티쳐무의 정보교육 포털</span>
+      <h1>영역으로 찾는 <span class="grad">정보 수업 도구함</span></h1>
+      <p class="subtitle">웹교과서, 수업교안 노트, 영역별 학습 자료를 한 곳에서. 카드를 클릭하면 새 탭에서 열립니다.</p>
+    </header>
 
-  <div class="toolbar">
-    <div class="search">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input id="q" type="text" placeholder="사이트 이름으로 검색…" autocomplete="off">
+    <div class="toolbar">
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="q" type="text" placeholder="사이트 이름으로 검색…" autocomplete="off">
+      </div>
     </div>
+
+    <div class="filters" id="filters"></div>
+
+    <div id="sections"></div>
+    <div class="empty" id="empty">검색 결과가 없어요. 다른 키워드로 찾아보세요.</div>
   </div>
 
-  <div class="filters" id="filters"></div>
-
-  <div id="sections"></div>
-  <div class="empty" id="empty">검색 결과가 없어요. 다른 키워드로 찾아보세요.</div>
+  <!-- 제출형 활동지: 사본을 만든 뒤 배포까지 따라 하는 안내 화면 (주소 #copy-<key>) -->
+  <main id="guideView" class="guide-page" hidden></main>
 
   <footer>
     <div>© 티쳐무(무무) · 정보교육 웹 자료 모음</div>
@@ -143,6 +345,11 @@
   </footer>
 </div>
 
+<!-- 제출형 활동지 카드를 누르면 뜨는 창 -->
+<dialog id="panel" class="panel" aria-labelledby="pTitle"></dialog>
+
+<!-- 안내 그림(SVG)을 그리는 부품 — 이 파일이 없어도 포털은 열리고 안내 글만 보인다 -->
+<script src="guide-figures.js"></script>
 <script>
 // 분류: 웹교과서 / 수업교안 노트 / 학습 자료는 2022 개정 「정보」 영역 이름으로 / 제출형 활동지 / 교사·학급 도구
 // cat 은 칸 제목, chip 은 위쪽 거르기 단추에 보이는 짧은 이름이다.
@@ -196,11 +403,46 @@ const DATA = [
     items:[
     ]
   },
+  // ─── 제출형 활동지 ───────────────────────────────────────────────
+  // 카드를 누르면 [교사용 사본 만들기] · [테스트 페이지] 를 고르는 창이 뜬다.
+  // 사본 만들기를 누르면 구글의 사본 화면은 새 탭으로 열리고, 이 탭은 배포까지 따라 하는 안내 화면(#copy-<key>)으로 넘어간다.
+  // teacher 값
+  //   key   — 안내 화면 주소 끝말 (#copy-<key>) · 안내 그림 PNG 파일 이름
+  //   sheet — 배포용 원본 시트의 사본 링크(…/copy). …/edit?usp=sharing 이나 ID 만 적어도 된다.
+  //           ⚠ 반드시 학생 데이터가 없는 「배포용 원본」이어야 한다. 운영 중인 시트를 넣으면
+  //             숨긴 「계정(비밀번호)」 시트까지 복사되어 우리 반 학생의 학번·이름·답이 넘어간다.
+  //   test  — 둘러보기용 테스트 페이지(웹앱 /exec)
+  //   menu / setup / reset — 그 앱 Code.gs 의 createMenu·addItem 글자와 똑같이 적는다
+  //           (선생님이 사본 시트에서 눌러야 할 메뉴 이름이 안내와 그림에 그대로 나온다).
+  //   drive — 드라이브 권한도 묻는 앱이면 true (권한 설명에 한 줄 더한다)
   { cat:"제출형 활동지 (Apps Script)", chip:"제출형 활동지", color:"#10b981", soft:"#e3f7ef", dot:"#10b981",
+    note:"🧑‍🏫 <b>선생님께</b> — 카드를 누르면 <b>교사용 사본 만들기</b>와 <b>테스트 페이지</b>를 고를 수 있어요. 사본을 만들면 선생님 드라이브에 선생님만의 활동지가 생기고, 학생 답은 선생님 시트에만 쌓입니다(5분이면 됩니다). 테스트 페이지는 둘러보기용이라 실제 학생 정보는 넣지 마세요.",
     items:[
-      { icon:"🗂️", title:"공공데이터 수집 기록장", desc:"공공데이터를 수집하고 과정을 기록하는 탐구 활동지", url:"https://script.google.com/a/macros/goedu.kr/s/AKfycbxJVWlS-MkqY9qrGWXkSDJTMpK1I1YZqTxfWebvQGKjXu52EpEdDrnLeNJfVjMpI0Wj/exec" },
-      { icon:"🧱", title:"자료구조 실습실", desc:"자료구조 개념을 직접 다뤄보는 탐구 실습 웹앱", url:"https://script.google.com/macros/s/AKfycbxRQE1gsVEMSch3Y0Jh7-dPIpOwfIQHYOxHQy8xf6dAqcj-jbF8YDROEwxv-aSYg6FSmw/exec" },
-      { icon:"📉", title:"빅데이터 학습실", desc:"데이터 과학 학습지 기반의 빅데이터 탐구 활동실", url:"https://script.google.com/macros/s/AKfycbxRiE6fEyDJE4pbjQN3tpJkTC5ZDsZERdwoshGFUkJE_jF6W5QpUDS6N_xeT27KlWkejA/exec" },
+      { icon:"💡", title:"SW 개발 아이디어 제안하기", desc:"SW 개발 아이디어를 제안 배경·세부 내용·기대 효과로 정리해 제출하는 활동지",
+        teacher:{ key:"sw-idea",
+          sheet:"https://docs.google.com/spreadsheets/d/1Tm4mJKw2UZsfD5sYCcobNGDZov9uhzMEe5t1fB8uXFk/copy",
+          test:"https://script.google.com/macros/s/AKfycbyLBcTH2eMyDmg5_630Cdj4TwtDAaJfUjmx3rCisVGRrY6HSCQI4SF00toVAHLFG2B4qQ/exec",
+          menu:"📝 활동지", setup:"시트 만들기 / 머리글 정리", reset:"🔑 학생 비밀번호 초기화" } },
+      { icon:"🗂️", title:"공공데이터 수집 기록장", desc:"공공데이터를 수집하고 과정을 기록하는 탐구 활동지",
+        teacher:{ key:"open-data",
+          sheet:"https://docs.google.com/spreadsheets/d/1xr_rgURmxdM_Lt78nqoFoM-rzPhlU4rBFgk_L_LVuW0/copy",
+          test:"https://script.google.com/macros/s/AKfycbzznJxCwfL-tWO6E4o35rfQveH6VPFEaXLh4PsRfMR5LreRVh67XyXbw-QumzqQFmZz/exec",
+          menu:"공공데이터 수집 기록장", setup:"① 시트 준비하기", reset:"⑦ 비밀번호 초기화" } },
+      { icon:"🔍", title:"검색어 트렌드 분석하기", desc:"빅데이터의 개념과 특징을 익히고, 검색어 트렌드를 시각화·분석해 미래를 예측하는 활동지",
+        teacher:{ key:"trend-bigdata",
+          sheet:"https://docs.google.com/spreadsheets/d/1-XZOnMdGDg4Qofg1jK3Nv9UvfaRJnA8VJ0fKqMjgtuY/copy",
+          test:"https://script.google.com/macros/s/AKfycbyQkirXEar4NBWLkjsXSJUguznNNtZnNVEKPATKt8rVchSr__oGMSq0c2_G0DMNNNUseQ/exec",
+          menu:"📊 빅데이터 학습지", setup:"시트 만들기 / 머리글 정리", reset:"🔑 학생 비밀번호 초기화", drive:true } },
+      { icon:"🧱", title:"자료구조 실습실", desc:"큐·스택·트리·그래프를 직접 조작해 보는 자료구조 탐구 실습 활동지",
+        teacher:{ key:"data-structure",
+          sheet:"https://docs.google.com/spreadsheets/d/1EmMJboqcB82SfpizwqM60e98UEsGibSUEkNhC9acLSk/copy",
+          test:"https://script.google.com/macros/s/AKfycbwh4awxXz4RVxTqb6pHzo_ScTNu0TaL6ESus3mz0mZL9JlTZcrIFbv0TzgB9G3jeemNFw/exec",
+          menu:"자료구조 실습실", setup:"① 시트 준비하기", reset:"⑥ 비밀번호 초기화" } },
+      { icon:"🧭", title:"데이터 과학의 영향력 탐구 (진로연계)", desc:"데이터로 달라진 세상의 긍정·부정 영향을 평가하고, 그 안에서 나의 진로를 설계하는 활동지",
+        teacher:{ key:"data-science-career",
+          sheet:"https://docs.google.com/spreadsheets/d/1K4bw1kxPL8bFdl8xUsTI_VoOi3PrkciPDMf-aeWapCI/copy",
+          test:"https://script.google.com/macros/s/AKfycbyJUcwACPBUGEf8ma5Mx6suHFjjeb1pmtU6sEJWJCHQnRM1Rv5ttOpsuATBbHpfEMOudg/exec",
+          menu:"데이터 과학 영향력 탐구", setup:"① 시트 준비하기", reset:"⑦ 비밀번호 초기화" } },
     ]
   },
   { cat:"교사·학급 도구", chip:"교사·학급 도구", color:"#e8488a", soft:"#fde8f1", dot:"#e8488a",
@@ -215,6 +457,12 @@ const sectionsEl = document.getElementById('sections');
 const filtersEl = document.getElementById('filters');
 const emptyEl = document.getElementById('empty');
 const qEl = document.getElementById('q');
+const portalView = document.getElementById('portalView');
+const guideView = document.getElementById('guideView');
+const panelEl = document.getElementById('panel');
+const PORTAL_TITLE = document.title;
+
+const ARROW = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>`;
 
 let activeCat = "전체";
 
@@ -234,6 +482,51 @@ qEl.addEventListener('input', render);
 function prettyUrl(url){
   const bare = url.replace(/^https?:\/\//,'');
   return bare.length > 46 ? bare.slice(0,43) + '…' : bare;
+}
+
+function esc(s){
+  return String(s ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// 구글 시트 주소(또는 ID)에서 ID만 꺼낸다 — …/d/<ID>/copy · /edit?usp=sharing 어느 것을 붙여 넣어도 된다
+function sheetId(s){
+  if(!s) return "";
+  const m = String(s).match(/\/d\/([A-Za-z0-9_-]{20,})/);
+  if(m) return m[1];
+  return /^[A-Za-z0-9_-]{20,}$/.test(s) ? s : "";
+}
+// 주소 끝을 /copy 로 두면 구글이 「사본 만들기」 화면을 띄운다 (시트에 붙은 Apps Script 도 함께 복사된다)
+function copyUrl(t){
+  const id = sheetId(t && t.sheet);
+  return id ? `https://docs.google.com/spreadsheets/d/${id}/copy` : "";
+}
+
+function findTeacherItem(key){
+  for(const g of DATA) for(const it of g.items){
+    if(it.teacher && it.teacher.key === key) return it;
+  }
+  return null;
+}
+
+// 제출형 활동지 카드 — 카드를 누르면 고르는 창, 아래 두 단추는 바로 간다
+function teacherCard(it, group){
+  const t = it.teacher;
+  const url = copyUrl(t);
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.setProperty('--accent', group.color);
+  card.style.setProperty('--accent-soft', group.soft);
+  card.innerHTML = `
+    <div class="icon">${it.icon}</div>
+    <h3><button type="button" class="stretch" data-panel="${esc(t.key)}">${esc(it.title)}</button></h3>
+    <p>${esc(it.desc)}</p>
+    <div class="card-actions">
+      ${url
+        ? `<a class="ca primary" href="${url}" target="_blank" rel="noopener" data-copy-go="${esc(t.key)}">🧑‍🏫 교사용 사본 만들기</a>`
+        : `<span class="ca wait">🧑‍🏫 원본 준비 중</span>`}
+      ${t.test ? `<a class="ca" href="${esc(t.test)}" target="_blank" rel="noopener">▶ 테스트 페이지</a>` : ''}
+    </div>`;
+  return card;
 }
 
 function render(){
@@ -259,6 +552,7 @@ function render(){
         <h2>${group.cat}</h2>
         <span class="count">${soon ? "준비 중" : items.length}</span>
       </div>
+      ${group.note ? `<div class="section-note">${group.note}</div>` : ''}
       <div class="grid"></div>`;
     const grid = sec.querySelector('.grid');
     if(soon){
@@ -271,6 +565,7 @@ function render(){
       total += 1;
     }
     items.forEach(it=>{
+      if(it.teacher){ grid.appendChild(teacherCard(it, group)); return; }
       const a = document.createElement('a');
       a.className = 'card';
       a.href = it.url; a.target = "_blank"; a.rel = "noopener";
@@ -281,7 +576,7 @@ function render(){
         <h3>${it.title}</h3>
         <p>${it.desc}</p>
         <span class="go">바로가기
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+          ${ARROW}
         </span>
         <div class="url">${prettyUrl(it.url)}</div>`;
       grid.appendChild(a);
@@ -292,7 +587,316 @@ function render(){
   emptyEl.style.display = total===0 ? 'block' : 'none';
 }
 
+// ─── ① 카드를 누르면 뜨는 창: 교사용 사본 / 테스트 페이지 ─────────────
+function panelHtml(it){
+  const t = it.teacher;
+  const url = copyUrl(t);
+  const copyChoice = url
+    ? `<a class="choice primary" href="${url}" target="_blank" rel="noopener" data-copy-go="${esc(t.key)}">
+        <span class="c-ico">🧑‍🏫</span>
+        <span class="c-txt"><b>교사용 사본 만들기</b>
+          <small>선생님 드라이브에 이 활동지의 사본(시트 + Apps Script)이 생깁니다. 사본 화면은 새 탭으로 열리고, 이 화면은 배포까지 따라 하는 그림 안내로 넘어갑니다.</small></span>
+        <span class="c-go">${ARROW}</span>
+      </a>`
+    : `<div class="choice wait"><span class="c-ico">🧑‍🏫</span>
+        <span class="c-txt"><b>원본 준비 중</b><small>배포용 원본 시트를 준비하고 있어요.</small></span></div>`;
+  const testChoice = t.test
+    ? `<a class="choice" href="${esc(t.test)}" target="_blank" rel="noopener">
+        <span class="c-ico">▶</span>
+        <span class="c-txt"><b>테스트 페이지</b>
+          <small>학생 화면을 미리 둘러보는 체험용입니다(새 탭). 입력한 내용은 티쳐무 선생님의 시험용 시트에 남으니, 실제 이름·학번 대신 연습용 값(예: 20101)을 넣어 주세요.</small></span>
+        <span class="c-go">${ARROW}</span>
+      </a>`
+    : '';
+  return `
+  <div class="p-head">
+    <div class="g-icon">${it.icon}</div>
+    <div class="g-titles">
+      <div class="g-kicker">제출형 활동지 · 구글 시트 + Apps Script</div>
+      <h2 id="pTitle">${esc(it.title)}</h2>
+    </div>
+    <button type="button" class="g-close" data-close aria-label="닫기">✕</button>
+  </div>
+  <div class="p-body">
+    <p class="p-desc">${esc(it.desc)}</p>
+    ${copyChoice}
+    ${testChoice}
+    <button type="button" class="link-like" data-guide="${esc(t.key)}">사본을 만들기 전에 배포 방법부터 읽어 보기 →</button>
+  </div>`;
+}
+
+function openPanel(key){
+  const it = findTeacherItem(key);
+  if(!it) return;
+  panelEl.innerHTML = panelHtml(it);
+  document.documentElement.classList.add('locked');
+  if(typeof panelEl.showModal === 'function'){ if(!panelEl.open) panelEl.showModal(); }
+  else panelEl.setAttribute('open', '');
+}
+
+// 크롬은 대화상자의 'close' 알림을 다음 화면 그리기 때 보내서, 탭이 가려져 있으면 한참 늦는다.
+// 알림을 기다리지 않고 닫는 자리에서 바로 뒤 화면 스크롤 잠금을 푼다 (Esc 로 닫을 때만 알림 쪽이 푼다)
+function closePanel(){
+  if(typeof panelEl.close === 'function'){ if(panelEl.open) panelEl.close(); }
+  else panelEl.removeAttribute('open');
+  document.documentElement.classList.remove('locked');
+}
+panelEl.addEventListener('close', ()=>{ if(!panelEl.open) document.documentElement.classList.remove('locked'); });
+panelEl.addEventListener('click', e=>{ if(e.target === panelEl) closePanel(); });   // 바깥 어두운 곳
+
+// ─── ② 사본을 만든 뒤 배포까지 따라 하는 안내 화면 ─────────────────────
+// 단계 체크는 이 탭을 열어 둔 동안만 기억한다 (아무것도 저장하지 않는다)
+const PROGRESS = {};
+let portalScroll = 0;
+
+function guideLink(key){
+  return location.href.split('#')[0] + '#copy-' + key;
+}
+
+// 안내 그림 한 장 — guide-figures.js 가 없으면(불러오기 실패) 그림 없이 글만 보여 준다
+function fig(name, arg, caption){
+  const GF = window.GuideFigures;
+  if(!GF || !GF[name]) return '';
+  return `<figure class="fig"><div class="fig-art">${GF[name](arg)}</div><figcaption>${caption}</figcaption></figure>`;
+}
+
+function guidePageHtml(it, fromCopy){
+  const t = it.teacher;
+  const url = copyUrl(t);
+  const menu = esc(t.menu), setup = esc(t.setup), reset = esc(t.reset);
+  const step1 = url ? `
+        <div class="actions">
+          <a class="btn primary" href="${url}" target="_blank" rel="noopener">📄 사본 만들기 화면 ${fromCopy ? '다시 ' : ''}열기 ${ARROW}</a>
+          <button type="button" class="btn" data-copy="${url}">🔗 링크 복사</button>
+        </div>
+        <input class="link-box" type="text" readonly value="${url}" aria-label="사본 만들기 링크">
+        <p class="hint">구글에 로그인한 상태여야 합니다. 시트에 붙은 Apps Script 코드도 함께 복사되고, 사본 이름은 마음대로 바꿔도 돼요 (예: 「${esc(it.title)} 2학년 3반」).
+          다른 계정(개인 Gmail 등)으로 만들려면 링크를 복사해, 그 계정으로 로그인한 창에 붙여 넣으세요.</p>`
+    : `
+        <div class="actions"><button type="button" class="btn primary" disabled>📄 원본 준비 중</button></div>
+        <p class="hint">티쳐무 선생님이 이 활동지의 배포용 원본 시트를 준비하고 있어요. 아래 절차는 미리 읽어 두셔도 됩니다.</p>`;
+
+  return `
+  <div class="gp-top">
+    <button type="button" class="btn small" data-home>← 도구함으로 돌아가기</button>
+    <div class="gp-tools">
+      <button type="button" class="btn small" data-copy="${esc(guideLink(t.key))}">🔗 이 안내 링크 복사</button>
+      ${url ? `<a class="btn small" href="guide/${esc(t.key)}-guide.png" target="_blank" rel="noopener">🖼 그림 한 장으로 보기</a>` : ''}
+    </div>
+  </div>
+
+  <header class="gp-head">
+    <div class="g-icon">${it.icon}</div>
+    <div class="g-titles">
+      <div class="g-kicker">🧑‍🏫 선생님용 · 사본을 만든 뒤 배포까지</div>
+      <h1 class="gp-title">${esc(it.title)}</h1>
+    </div>
+  </header>
+
+  ${fromCopy ? `<div class="gp-banner" role="status">✅ 새 탭에 <b>사본 만들기</b> 화면을 열었어요. 그 탭에서 파란 <b>[사본 만들기]</b>를 누른 뒤, 이 화면의 <b>2단계</b>부터 따라 하세요.</div>` : ''}
+
+  <ul class="g-pre">
+    <li>이 활동지는 <b>구글 시트에 붙은 Apps Script 앱</b>입니다. 사본을 만들면 선생님 드라이브에 <b>선생님만의 앱</b>이 생기고, 학생 답은 <b>선생님 시트에만</b> 저장됩니다.</li>
+    <li>학교(교육청) 계정은 3단계에서 <b>「모든 사용자」</b>가 안 보일 수 있어요. 그럴 땐 <b>개인 Gmail 계정</b>으로 하세요.</li>
+    <li>그림은 실제 화면을 단순하게 다시 그린 안내도예요. 주황 번호 차례대로 누르면 됩니다. 구글 화면이 바뀌면 모양이 조금 다를 수 있어요.</li>
+  </ul>
+
+  <div class="g-progress" aria-live="polite">
+    <div class="bar"><span></span></div>
+    <span class="txt"></span>
+  </div>
+
+  <section class="step" data-step="0">
+    <div class="num">1</div>
+    <div class="s-body">
+      <h3>새 탭에서 <span class="ui">사본 만들기</span>를 누릅니다.</h3>
+      ${step1}
+      <label class="check"><input type="checkbox" data-done="0"> 이 단계를 마쳤어요</label>
+    </div>
+  </section>
+
+  <section class="step" data-step="1">
+    <div class="num">2</div>
+    <div class="s-body">
+      <h3>사본 시트의 앱 메뉴에서 <span class="ui">${setup}</span>를 누르고 권한을 승인합니다.</h3>
+      <div class="path">
+        <span class="where">시트 위쪽 메뉴 줄 오른쪽 끝(도움말 옆)</span>
+        <span class="ui">${menu}</span><span class="sep">›</span><span class="ui">${setup}</span>
+      </div>
+      <p class="hint">메뉴가 안 보이면 <b>새로 고침(F5)</b> 뒤 5초쯤 기다리세요. 사본을 처음 열면 조금 늦게 나타납니다.</p>
+      ${fig('menu', { title: it.title, menu: t.menu, setup: t.setup },
+        `① 메뉴 줄 오른쪽 끝의 <b>「${menu}」</b> → ② 맨 위 <b>「${setup}」</b>`)}
+      <ol>
+        <li><b>「승인 필요」</b> 창이 뜨면 <span class="ui">확인</span>(또는 <span class="ui">계속</span>)을 누르고 내 구글 계정을 고릅니다.</li>
+        <li><b>「Google에서 확인하지 않은 앱」</b> 경고가 뜨면 왼쪽 아래 <span class="ui">고급</span> → <span class="ui">…(으)로 이동(안전하지 않음)</span>을 누릅니다.</li>
+        <li>권한 목록 옆에 <b>체크 상자</b>가 있으면 <b>모두 체크</b>(「모두 선택」)하고 <span class="ui">계속</span>(또는 <span class="ui">허용</span>)을 누릅니다. 하나라도 빼면 학생이 저장할 때 멈춰요.</li>
+        <li>준비를 마쳤다는 안내창이 뜨면 끝입니다. 승인 뒤 아무 안내가 없으면 메뉴를 <b>한 번 더</b> 누르세요.</li>
+      </ol>
+      ${fig('auth', null,
+        `① <b>고급</b> → ② <b>○○(으)로 이동(안전하지 않음)</b> → ③ <b>모두 선택</b> → ④ <b>계속</b>. 파란 「안전한 페이지로 돌아가기」를 누르면 승인이 멈춰요. 체크 상자가 없는 화면이면 <b>허용</b>을 누르세요.`)}
+      <details class="why">
+        <summary>왜 「안전하지 않음」이라고 나오나요?</summary>
+        <p>구글의 앱 심사를 받지 않은 스크립트라면 누구에게나 나오는 경고입니다. 이 앱은 방금 선생님 드라이브에 만든 <b>선생님 소유의 사본</b>이고, 선생님 계정으로 선생님 시트에 학생 답을 적기 위해 스프레드시트 권한을 묻습니다.${t.drive ? ' 학생이 올린 캡처 그림을 선생님 드라이브 폴더에 저장하므로 드라이브 권한도 묻습니다.' : ''} 티쳐무에게는 아무것도 전달되지 않습니다.</p>
+      </details>
+      <label class="check"><input type="checkbox" data-done="1"> 이 단계를 마쳤어요</label>
+    </div>
+  </section>
+
+  <section class="step" data-step="2">
+    <div class="num">3</div>
+    <div class="s-body">
+      <h3><span class="ui">확장 프로그램</span> → <span class="ui">Apps Script</span> → <span class="ui">배포</span> → <span class="ui">새 배포</span> → <span class="ui">웹 앱</span>을 고릅니다. 실행은 「나」, 액세스는 「모든 사용자」로 두고, 나온 주소를 학생에게 줍니다.</h3>
+      <ol>
+        <li>사본 시트 메뉴에서 <span class="ui">확장 프로그램</span> › <span class="ui">Apps Script</span>를 눌러 편집기를 엽니다. (새 탭으로 열려요)</li>
+        <li>편집기 오른쪽 위 파란 <span class="ui">배포</span> › <span class="ui">새 배포</span>를 누릅니다.</li>
+      </ol>
+      ${fig('editor', null,
+        `① <b>확장 프로그램</b> → ② <b>Apps Script</b> → 새 탭의 편집기에서 ③ <b>배포</b> → ④ <b>새 배포</b>`)}
+      <ol start="3">
+        <li>「유형 선택」 옆 톱니바퀴 ⚙ › <span class="ui">웹 앱</span>을 고르고, 두 칸을 이렇게 맞춥니다.
+          <table class="setting">
+            <tr><th>다음 사용자 인증 정보로 실행</th><td><b>나</b> (선생님 이메일)</td></tr>
+            <tr><th>액세스 권한이 있는 사용자</th><td><b>모든 사용자</b></td></tr>
+          </table>
+          <p class="hint">「Google 계정이 있는 모든 사용자」가 아니라 그냥 <b>「모든 사용자」</b>입니다. 학생은 구글 로그인 없이 학번으로 들어와요. 목록에 「모든 사용자」가 없으면 학교 계정 제한이니, 개인 Gmail 계정으로 1단계부터 다시 하세요.</p>
+        </li>
+      </ol>
+      ${fig('deploy', null,
+        `① <b>톱니바퀴 ⚙</b> → ② <b>웹 앱</b> → ③ 실행은 <b>나</b> → ④ 액세스는 <b>모든 사용자</b> → ⑤ <b>배포</b>`)}
+      <ol start="4">
+        <li><span class="ui">배포</span>를 누릅니다. 권한을 또 물으면 2단계처럼 승인하세요.</li>
+        <li>나온 <b>웹 앱 URL</b>을 <span class="ui">복사</span>해 학생에게 줍니다 (클래스룸 · QR 코드 등).</li>
+      </ol>
+      ${fig('url', null,
+        `① 웹 앱 URL 옆 <b>복사</b> → ② 클래스룸·QR 코드로 학생에게. 학생은 구글 로그인 없이 학번으로 들어옵니다.`)}
+      <p class="hint">✅ <b>확인하기</b> — 시크릿 창(Ctrl+Shift+N)에 그 주소를 붙여 넣어 학번 입력 화면이 뜨면 성공입니다.</p>
+      <p class="hint">주소를 잃어버리면 편집기의 <span class="ui">배포</span> › <span class="ui">배포 관리</span>에서 다시 볼 수 있어요. 코드를 고치지 않았다면 다시 배포할 일은 없습니다. <b>[새 배포]를 또 만들면 주소가 새로 생겨요.</b></p>
+      <label class="check"><input type="checkbox" data-done="2"> 이 단계를 마쳤어요</label>
+    </div>
+  </section>
+
+  <div class="g-finish" role="status">🎉 끝! 이제 학생에게 <b>3단계에서 받은 선생님 주소</b>를 알려 주세요.</div>
+
+  <div class="g-notes">
+    <h3>⚠ 꼭 알아 두세요</h3>
+    <ul>
+      <li>학생에게는 꼭 <b>3단계에서 받은 선생님 주소</b>를 주세요. 도구함의 <b>테스트 페이지</b>는 둘러보기용이라, 거기에 낸 답은 선생님 시트가 아니라 티쳐무 선생님의 시험용 시트로 갑니다.</li>
+      <li>학생 답과 계정은 <b>선생님 시트에만</b> 저장됩니다. 비밀번호는 암호화(해시)해 저장하므로 선생님도 볼 수 없어요. 잊은 학생은 <span class="ui">${menu}</span> › <span class="ui">${reset}</span>로 풀어 주세요.</li>
+      <li>사본은 <b>만든 날의 버전</b> 그대로입니다. 이 활동지가 새로 고쳐져도 선생님 사본은 바뀌지 않으니, 새 학기에는 사본을 새로 만들어 쓰세요.</li>
+      <li>© 티쳐무 · 학교 수업 목적으로 이용해 주세요. 화면 아래 저작권 표시는 그대로 두어 주시고, 재배포나 고쳐서 다시 나누는 일은 먼저 문의해 주세요.</li>
+    </ul>
+  </div>
+
+  <div class="gp-bottom"><button type="button" class="btn" data-home>← 도구함으로 돌아가기</button></div>`;
+}
+
+function updateProgress(key){
+  const done = PROGRESS[key];
+  const n = done.filter(Boolean).length;
+  guideView.querySelectorAll('.step').forEach((sec, i)=>{
+    sec.classList.toggle('done', done[i]);
+    sec.querySelector('.num').textContent = done[i] ? '✓' : String(i + 1);
+    sec.querySelector('[data-done]').checked = done[i];
+  });
+  guideView.querySelector('.g-progress .bar span').style.width = (n / 3 * 100) + '%';
+  guideView.querySelector('.g-progress .txt').textContent = `3단계 중 ${n}단계 마침`;
+  guideView.querySelector('.g-finish').classList.toggle('show', n === 3);
+}
+
+// 안내 화면으로 넘어간다. push: 뒤로 가기로 카드 목록에 돌아올 수 있게 방문 기록을 남긴다
+function showGuide(key, opts){
+  opts = opts || {};
+  const it = findTeacherItem(key);
+  if(!it){ showPortal(); return; }
+  if(opts.push){
+    if(guideView.hidden) portalScroll = window.scrollY;   // 카드 목록에서 넘어올 때만 돌아갈 자리를 기억한다
+    history.pushState({ view:'guide', key, fromPortal:true }, '', '#copy-' + key);
+  }
+  PROGRESS[key] = PROGRESS[key] || [false, false, false];
+  if(opts.fromCopy) PROGRESS[key][0] = true;      // 방금 사본 화면을 새 탭으로 열었다
+  guideView.innerHTML = guidePageHtml(it, !!opts.fromCopy);
+  guideView.dataset.key = key;
+  updateProgress(key);
+  portalView.hidden = true;
+  guideView.hidden = false;
+  document.title = `${it.title} · 선생님용 안내 — ${PORTAL_TITLE}`;
+  window.scrollTo(0, 0);
+}
+
+function showPortal(){
+  const wasGuide = !guideView.hidden;
+  guideView.hidden = true;
+  portalView.hidden = false;
+  document.title = PORTAL_TITLE;
+  if(wasGuide) window.scrollTo(0, portalScroll);
+}
+
+// [도구함으로 돌아가기] — 카드에서 넘어왔으면 뒤로 가기, 링크로 바로 들어왔으면 주소만 바꾼다
+function goHome(){
+  if(history.state && history.state.view === 'guide' && history.state.fromPortal){ history.back(); return; }
+  history.replaceState(null, '', location.pathname + location.search);
+  showPortal();
+}
+
+// 주소 끝이 #copy-<key> 이면 그 안내 화면, 아니면 카드 목록
+function route(){
+  const key = (location.hash.match(/^#copy-([\w-]+)$/) || [])[1];
+  if(key && findTeacherItem(key)){
+    if(guideView.hidden || guideView.dataset.key !== key) showGuide(key);
+  } else if(!guideView.hidden){
+    showPortal();
+  }
+}
+window.addEventListener('popstate', route);
+window.addEventListener('hashchange', route);
+
+// 대화상자가 열려 있으면 바깥은 눌리지 않으므로, 복사용 글상자도 열린 대화상자 안에 잠깐 넣었다 뺀다
+async function copyText(text, btn){
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; } catch(e){ /* 아래 방법으로 한 번 더 */ }
+  if(!ok){
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    (panelEl.open ? panelEl : document.body).appendChild(ta); ta.select();
+    try { ok = document.execCommand('copy'); } catch(e){ ok = false; }
+    ta.remove();
+  }
+  const old = btn.innerHTML;
+  btn.textContent = ok ? '✅ 복사했어요' : '⚠ 복사가 안 돼요 — 직접 선택해 복사해 주세요';
+  setTimeout(()=>{ btn.innerHTML = old; }, 1800);
+}
+
+document.addEventListener('click', e=>{
+  // 교사용 사본 만들기 — 새 탭(구글 사본 화면)은 링크가 그대로 열고, 이 탭은 그다음에 안내 화면으로 넘긴다
+  const go = e.target.closest('[data-copy-go]');
+  if(go){
+    const key = go.dataset.copyGo;
+    setTimeout(()=>{ closePanel(); showGuide(key, { push:true, fromCopy:true }); }, 0);
+    return;
+  }
+  const p = e.target.closest('[data-panel]');
+  if(p){ openPanel(p.dataset.panel); return; }
+  const g = e.target.closest('[data-guide]');
+  if(g){ closePanel(); showGuide(g.dataset.guide, { push:true }); return; }
+  if(e.target.closest('[data-close]')){ closePanel(); return; }
+  if(e.target.closest('[data-home]')){ goHome(); return; }
+  const c = e.target.closest('[data-copy]');
+  if(c){ copyText(c.dataset.copy, c); return; }
+});
+guideView.addEventListener('change', e=>{
+  const box = e.target.closest('[data-done]');
+  if(!box) return;
+  const key = guideView.dataset.key;
+  PROGRESS[key][Number(box.dataset.done)] = box.checked;
+  updateProgress(key);
+});
+guideView.addEventListener('focusin', e=>{
+  if(e.target.classList.contains('link-box')) e.target.select();
+});
+
 render();
+route();   // #copy-<key> 링크로 바로 들어온 선생님은 곧장 안내 화면
 </script>
 </body>
 </html>
