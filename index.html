@@ -460,6 +460,17 @@ const DATA = [
           sheet:"https://docs.google.com/spreadsheets/d/1K4bw1kxPL8bFdl8xUsTI_VoOi3PrkciPDMf-aeWapCI/copy",
           test:"https://script.google.com/macros/s/AKfycbyJUcwACPBUGEf8ma5Mx6suHFjjeb1pmtU6sEJWJCHQnRM1Rv5ttOpsuATBbHpfEMOudg/exec",
           menu:"데이터 과학 영향력 탐구", setup:"① 시트 준비하기", reset:"⑦ 비밀번호 초기화" } },
+      { icon:"📈", title:"광고비와 매출 사이의 관계 알아보기 (1차시)", desc:"오렌지3으로 단순·다중 선형 회귀를 돌려 보고 평가 지표·회귀식을 적어 제출하는 통계적 회귀 분석 활동지",
+        teacher:{ key:"regression-stat",
+          sheet:"https://docs.google.com/spreadsheets/d/1WUfPqyuboZRsl9bM2dWfZdxoUIB1ofOX1cx6n9i56y8/copy",
+          test:"https://script.google.com/macros/s/AKfycbzsYXoljJ83ml32PcyNJEuFVM3zve6s2GAFzAqg7mO0pgNzLZk33flbs1Y7xcHXJJPQ/exec",
+          menu:"📈 광고비와 매출 학습지", setup:"① 시트 준비하기", reset:"비밀번호 초기화", drive:true } },
+      // ⚠ 아래 2차시는 아직 test(체험용 배포 주소)가 없다 — 있으면 [테스트 페이지] 단추가 함께 생긴다.
+      //   체험용은 반드시 **원본이 아닌 별도 사본**에서 배포할 것(원본에서 배포하면 체험자의 계정·답이 원본에 쌓인다).
+      { icon:"🤖", title:"기계학습으로 광고비와 매출 예측하기 (2차시)", desc:"같은 데이터를 70% / 30% 로 나누어 모델을 만들고, 배우지 않은 30%로 평가해 「새 시장에 써도 될까」를 따져 보는 활동지",
+        teacher:{ key:"regression-ml",
+          sheet:"https://docs.google.com/spreadsheets/d/1pu-agUlyNX_v5sgmqVaL-PidvbQXiEng4ZHkF-6eCzk/copy",
+          menu:"🤖 기계학습 회귀 학습지", setup:"① 시트 준비하기", reset:"비밀번호 초기화", drive:true } },
       // 설문지는 시트 메뉴가 없다(kind:"survey") — 안내가 「과목·문항 고치기 → 웹 앱 배포(권한 승인 포함)」 차례로 바뀐다.
       // subject: 찾아 바꾸기로 바꿀 과목 이름 · count: Index.html 의 문항 수 (for 문의 i < 6)
       { icon:"📋", title:"프로그래밍 수업 사전 설문지", desc:"진로 희망·과목 선택 이유·목표·흥미·탐구 주제·각오를 받는 첫 시간 사전 설문. 과목 이름과 문항을 바꿔 다른 수업에도 쓸 수 있어요",
