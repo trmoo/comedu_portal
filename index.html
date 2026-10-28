@@ -455,6 +455,12 @@ const DATA = [
           sheet:"https://docs.google.com/spreadsheets/d/1EmMJboqcB82SfpizwqM60e98UEsGibSUEkNhC9acLSk/copy",
           test:"https://script.google.com/macros/s/AKfycbwh4awxXz4RVxTqb6pHzo_ScTNu0TaL6ESus3mz0mZL9JlTZcrIFbv0TzgB9G3jeemNFw/exec",
           menu:"자료구조 실습실", setup:"① 시트 준비하기", reset:"⑥ 비밀번호 초기화" } },
+      // next — 시트 준비 다음에 눌러야 할 메뉴(교사 암호 등) · dashboard — 배포 주소 뒤에 붙이는 교사 화면 꼬리
+      { icon:"🥤", title:"부숴봐! 자판기 — 예외 처리", desc:"자판기를 일부러 고장 내며 예외를 찾고, try–except 로 방어막을 세우는 2차시 게임. 선생님 대시보드에서 반 전체 진행을 실시간으로 봐요",
+        teacher:{ key:"exception-basics",
+          sheet:"https://docs.google.com/spreadsheets/d/1cMKTmO_HFpcChS8TZTtw8Dpnel7QOb9krftvQyX3GvE/copy",
+          menu:"🥤 부숴봐! 자판기", setup:"① 시트 준비하기", reset:"③ 학생 비밀번호 초기화",
+          next:"② 교사 암호 정하기", dashboard:"?page=teacher" } },
       { icon:"🧭", title:"데이터 과학의 영향력 탐구 (진로연계)", desc:"데이터로 달라진 세상의 긍정·부정 영향을 평가하고, 그 안에서 나의 진로를 설계하는 활동지",
         teacher:{ key:"data-science-career",
           sheet:"https://docs.google.com/spreadsheets/d/1K4bw1kxPL8bFdl8xUsTI_VoOi3PrkciPDMf-aeWapCI/copy",
@@ -769,6 +775,7 @@ function menuStepBody(it){
         `① 메뉴 줄 오른쪽 끝의 <b>「${menu}」</b> → ② 맨 위 <b>「${setup}」</b>`)}
       ${authHtml('<b>「승인 필요」</b> 창이 뜨면 <span class="ui">확인</span>(또는 <span class="ui">계속</span>)을 누르고 내 구글 계정을 고릅니다.',
         '준비를 마쳤다는 안내창이 뜨면 끝입니다. 승인 뒤 아무 안내가 없으면 메뉴를 <b>한 번 더</b> 누르세요.')}
+      ${t.next ? `<div class="callout strong">👉 이어서 같은 메뉴의 <span class="ui">${menu}</span><span class="sep">›</span><span class="ui">${esc(t.next)}</span>도 눌러 주세요. 여기서 정한 암호로 선생님 대시보드에 들어갑니다.</div>` : ''}
       ${whyHtml(t)}`;
 }
 
@@ -884,7 +891,8 @@ function notesHtml(it){
     `<li>사본은 <b>만든 날의 버전</b> 그대로입니다. 편집기에서 고친 뒤에는 <b>「새 버전」으로 다시 배포</b>해야 학생 화면에 반영됩니다.</li>`,
     `<li>© 티쳐무 · 학교 수업 목적으로 이용해 주세요. <b>과목과 문항은 자유롭게 고쳐 쓰셔도 됩니다.</b> 고친 것을 다시 나누는 일은 먼저 문의해 주세요.</li>`,
   ] : [
-    test,
+    t.test ? test : '',
+    t.dashboard ? `<li><b>선생님 대시보드</b>는 3단계에서 받은 주소 끝에 <code>${esc(t.dashboard)}</code>를 붙여 엽니다(예: <code>…/exec${esc(t.dashboard)}</code>). 교실 TV 에 띄우는 발표 화면은 학생 이름을 가려 보여 줍니다.</li>` : '',
     `<li>학생 답과 계정은 <b>선생님 시트에만</b> 저장됩니다. 비밀번호는 암호화(해시)해 저장하므로 선생님도 볼 수 없어요. 잊은 학생은 <span class="ui">${esc(t.menu)}</span> › <span class="ui">${esc(t.reset)}</span>로 풀어 주세요.</li>`,
     `<li>사본은 <b>만든 날의 버전</b> 그대로입니다. 이 활동지가 새로 고쳐져도 선생님 사본은 바뀌지 않으니, 새 학기에는 사본을 새로 만들어 쓰세요.</li>`,
     `<li>© 티쳐무 · 학교 수업 목적으로 이용해 주세요. 화면 아래 저작권 표시는 그대로 두어 주시고, 재배포나 고쳐서 다시 나누는 일은 먼저 문의해 주세요.</li>`,

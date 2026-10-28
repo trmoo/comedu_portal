@@ -48,7 +48,9 @@ function sheetId(s) {
 const copyUrl = t => (sheetId(t.sheet) ? `https://docs.google.com/spreadsheets/d/${sheetId(t.sheet)}/copy` : '');
 
 // ③ 찍는 도구
+// ⚠ Edge 가 일을 넘기고 먼저 끝나 앞 그림 자리에 다음 그림이 찍힌 적이 있다(2026-10-28) — 그럴 땐 GUIDE_BROWSER 로 Chrome 을 쓴다
 const BROWSERS = [
+  process.env.GUIDE_BROWSER || '',
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
   'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
@@ -72,6 +74,8 @@ function shoot(svg, file) {
     `--user-data-dir=${path.join(TMP, 'profile')}`, '--force-device-scale-factor=2',
     `--window-size=${w},${h}`, `--screenshot=${out}`, pathToFileURL(page).href,
   ], { stdio: 'ignore', timeout: 60000 });
+  // Edge 가 일을 넘기고 먼저 끝나는 일이 있다 — 그림 파일이 다 써질 때까지 잠깐 기다린다
+  for (let i = 0; i < 100 && !(fs.existsSync(out) && fs.statSync(out).size > 24); i++) execFileSync(process.execPath, ['-e', 'setTimeout(()=>{},200)']);
   const png = fs.readFileSync(out);
   const pw = png.readUInt32BE(16), ph = png.readUInt32BE(20);
   console.log(`  ${file}  ${pw}×${ph}  ${(png.length / 1024).toFixed(0)}KB`);
@@ -147,6 +151,7 @@ function poster(app) {
     place(GF.menu({ title: app.title, menu: t.menu, setup: t.setup }));
     place(GF.auth());
     note('파란 「안전한 페이지로 돌아가기」를 누르면 승인이 멈춰요. 체크 상자가 없으면 [허용]을 누르세요.', { weight: 700, fill: '#dc2626' });
+    if (t.next) note(`👉 이어서 같은 메뉴의 「${t.next}」도 눌러 주세요 — 선생님 대시보드 암호를 정합니다.`, { weight: 700, fill: '#047857' });
 
     step('3', 'Apps Script 편집기에서 웹 앱으로 배포하고 주소를 학생에게');
     place(GF.editor());
