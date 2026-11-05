@@ -122,7 +122,7 @@
     color:var(--accent,#4f7cff);
   }
   .card .url{font-size:11.5px;color:#9aa4bd;margin-top:8px;word-break:break-all;}
-  /* 최종 업데이트 날짜 — 카드 맨 아래, 작은 글씨 (updated.js 가 없거나 날짜를 모르면 안 그린다) */
+  /* 처음 만든 날 · 최종 업데이트 — 카드 맨 아래, 작은 글씨 (updated.js 가 없거나 날짜를 모르면 안 그린다) */
   .card .upd{display:block;font-size:11px;color:#9aa4bd;margin-top:6px;}
   .card-actions + .upd{margin-top:10px;}
   .card.soon{border-style:dashed;box-shadow:none;background:#fbfcfe;}
@@ -572,21 +572,29 @@ function findTeacherItem(key){
 }
 
 // 제출형 활동지 카드 — 카드를 누르면 고르는 창, 아래 두 단추는 바로 간다
-// 카드의 「최종 업데이트」 — tools/update-dates.mjs 가 모은 updated.js(저장소 마지막 커밋) 또는 손으로 적은 updated
-function updatedOf(it){
-  const manual = it.updated || (it.teacher && it.teacher.updated);
-  if(manual) return manual;
+// 카드의 「처음 만든 날 · 최종 업데이트」 — tools/update-dates.mjs 가 모은 updated.js(저장소 첫·마지막 커밋)
+// 손으로 적은 made·updated(제출형은 teacher.made·teacher.updated)가 있으면 그것이 이긴다
+function datesOf(it){
   const U = window.UPDATED || {};
-  if(it.teacher) return it.teacher.repo ? (U[it.teacher.repo] || '') : '';
-  const m = (it.url || '').match(/^https:\/\/trmoo\.github\.io\/([^/]+)\/?/);
-  return m ? (U[m[1]] || '') : '';
+  let repo = '';
+  if(it.teacher) repo = it.teacher.repo || '';
+  else { const m = (it.url || '').match(/^https:\/\/trmoo\.github\.io\/([^/]+)\/?/); repo = m ? m[1] : ''; }
+  const auto = (repo && U[repo]) || {};
+  const t = it.teacher || {};
+  return { made: it.made || t.made || auto.made || '', updated: it.updated || t.updated || auto.updated || '' };
+}
+function fmtDate(d){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || '');
+  return m ? `${m[1]}. ${+m[2]}. ${+m[3]}.` : '';
 }
 function updHtml(it){
-  const d = updatedOf(it);
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d);
-  if(!m) return '';
-  const label = `${m[1]}. ${+m[2]}. ${+m[3]}.`;
-  return `<span class="upd" title="최종 업데이트 ${label}">${label} 업데이트</span>`;
+  const d = datesOf(it);
+  const made = fmtDate(d.made), upd = fmtDate(d.updated);
+  const parts = [];
+  if(made) parts.push(`${made} 만듦`);
+  if(upd)  parts.push(`${upd} 업데이트`);
+  if(!parts.length) return '';
+  return `<span class="upd" title="처음 만든 날 ${made || '모름'} · 최종 업데이트 ${upd || '모름'}">${parts.join(' · ')}</span>`;
 }
 
 function teacherCard(it, group){
