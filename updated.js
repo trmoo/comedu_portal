@@ -11,6 +11,7 @@ window.UPDATED = {
   "association-analysis": { made: "2026-07-29", updated: "2026-08-07" },
   "binary-converter": { made: "2026-07-29", updated: "2026-08-07" },
   "class-seats": { made: "2026-08-30", updated: "2026-08-30" },
+  "cluster-analysis": { made: "2026-11-08", updated: "2026-11-08" },
   "commeng": { made: "2026-08-07", updated: "2026-08-10" },
   "computer-spec": { made: "2026-09-19", updated: "2026-10-03" },
   "diamonds_ds_performance_pract": { made: "2026-10-08", updated: "2026-10-12" },

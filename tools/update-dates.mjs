@@ -110,6 +110,12 @@ ${body}
 };
 `);
 
+// index.html 의 <script src="updated.js?v=…"> 꼬리를 바꿔, 브라우저가 옛 날짜 파일을 붙잡지 않게 한다
+const stamp = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 16).replace(/\D/g, '');
+const htmlPath = join(root, 'index.html');
+const html2 = readFileSync(htmlPath, 'utf8').replace(/src="updated\.js(\?v=[^"]*)?"/, `src="updated.js?v=${stamp}"`);
+writeFileSync(htmlPath, html2);
+
 console.log(`저장소 ${repos.length}곳 중 ${Object.keys(dates).length}곳의 날짜를 updated.js 에 적었습니다.`);
 const noRepo = DATA.flatMap(g => g.items).filter(it => !repoOf(it) && !(it.updated || it.teacher?.updated || it.made || it.teacher?.made));
 if (noRepo.length) console.log('저장소도 손으로 적은 날짜도 없어 날짜를 안 보이는 카드:\n  ' + noRepo.map(it => it.title).join('\n  '));
