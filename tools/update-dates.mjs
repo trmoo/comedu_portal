@@ -92,7 +92,11 @@ for (const repo of repos) {
     // 「CLAUDE.md 를 저장소에서 뺀다」 커밋을 했는데, 이것을 세면 거의 모든 카드가 같은 날짜가 된다.
     const c = list.find(x => !SKIP.test(x.commit.message)) || list[0];
     if (!c) throw new Error('커밋 없음');
-    dates[repo] = { made: await firstCommitDate(repo), updated: kstDate(c.commit.committer.date) };
+    // README 가 있으면 카드에 「📖 README」 단추를 단다 (없으면 404)
+    const readme = (await api(`${repo}/readme`)).ok;
+    // Issues 가 켜져 있으면 「💡 제안하기 · 💬 수업 후기」 창에 「깃허브 이슈로 남기기」 를 단다
+    const info = await (await api(repo)).json();
+    dates[repo] = { made: await firstCommitDate(repo), updated: kstDate(c.commit.committer.date), readme, issues: info.has_issues !== false };
   } catch (e) {
     failed.push(`${repo} (${e.message}${prev[repo] ? ' — 지난번 날짜를 그대로 둠' : ''})`);
     if (prev[repo]) dates[repo] = prev[repo];
@@ -100,10 +104,12 @@ for (const repo of repos) {
 }
 
 const body = Object.entries(dates)
-  .map(([k, v]) => `  ${JSON.stringify(k)}: { made: "${v.made || ''}", updated: "${v.updated || ''}" },`).join('\n');
+  .map(([k, v]) => `  ${JSON.stringify(k)}: { made: "${v.made || ''}", updated: "${v.updated || ''}", readme: ${v.readme ? 'true' : 'false'}, issues: ${v.issues === false ? 'false' : 'true'} },`).join('\n');
 writeFileSync(join(root, 'updated.js'),
 `/* 카드의 「처음 만든 날」·「최종 업데이트」 날짜 — node tools/update-dates.mjs 가 만든다. 손으로 고치지 말 것.
  * 열쇠는 깃허브 저장소 이름. made = 첫 커밋, updated = 마지막 커밋(CLAUDE.md 정리 커밋 제외), 모두 한국 시각.
+ * readme = 저장소에 README 가 있는가 (카드의 「📖 사용법」 단추).
+ * issues = 깃허브 Issues 가 켜져 있는가 (「💡 제안하기 · 💬 수업 후기」 창의 「깃허브 이슈로 남기기」).
  * © 2026 티쳐무 */
 window.UPDATED = {
 ${body}
