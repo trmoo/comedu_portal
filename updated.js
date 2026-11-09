@@ -18,6 +18,7 @@ window.UPDATED = {
   "comedu_agent": { made: "2026-08-08", updated: "2026-08-08", readme: true, issues: true },
   "commeng": { made: "2026-08-07", updated: "2026-08-10", readme: true, issues: true },
   "computer-spec": { made: "2026-09-19", updated: "2026-10-03", readme: true, issues: true },
+  "data_structure_basics": { made: "2026-08-23", updated: "2026-08-23", readme: true, issues: true },
   "diamonds_ds_performance_pract": { made: "2026-10-08", updated: "2026-10-12", readme: false, issues: true },
   "exception-basics": { made: "2026-10-28", updated: "2026-11-05", readme: true, issues: true },
   "exception-raise": { made: "2026-11-05", updated: "2026-11-05", readme: true, issues: true },

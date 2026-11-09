@@ -126,8 +126,6 @@
     background:#fff;border:1px solid var(--line);font-size:13px;color:var(--ink-soft);text-decoration:none;
   }
   .tg-chip b{color:var(--ink);}
-  a.tg-chip:hover{border-color:var(--brand);color:var(--brand);}
-  a.tg-chip:focus-visible{outline:3px solid var(--brand);outline-offset:2px;}
   @media (max-width:860px){ .tg-steps{grid-template-columns:minmax(0,1fr);} }
 
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;}
@@ -462,8 +460,9 @@
         </div>
       </div>
       <div class="tg-chips">
+        <!-- 자료 수는 DATA 에서 센다 (아래 countHtml) — 카드를 더하면 저절로 바뀐다 -->
+        <span class="tg-chip" id="tgCount">📦 지금까지 공개한 자료</span>
         <span class="tg-chip" title="코드는 깃허브에서 누구나 볼 수 있지만 오픈소스 라이선스는 붙이지 않았습니다. 학생에게 주소를 알려 주거나 수업 화면에 띄우는 것은 자유이고, 고쳐서 다시 배포하거나 수업 밖에서 쓰실 때는 먼저 문의해 주세요.">📜 이용 범위: <b>학교 수업 목적이면 자유</b> (재배포·상업적 이용은 먼저 문의)</span>
-        <a class="tg-chip" href="https://trmoo.github.io/teacher-training26/" target="_blank" rel="noopener" title="이 자료들을 어떻게 만들었는지 정리한 연수 자료(새 탭)">🛠️ 만든 방법: <b>클로드와 대화로</b> — 사례 보기 ↗</a>
         <span class="tg-chip">🏫 대상: <b>학생·교사 누구나</b> (가입 없이 바로)</span>
       </div>
     </section>
@@ -496,7 +495,7 @@
 
 <!-- 안내 그림(SVG)을 그리는 부품 — 이 파일이 없어도 포털은 열리고 안내 글만 보인다 -->
 <script src="guide-figures.js"></script>
-<script src="updated.js?v=202611091110"></script>
+<script src="updated.js?v=202611091129"></script>
 <script>
 // 분류: 웹교과서 / 수업교안 노트 / 학습 자료는 2022 개정 「정보」 영역 이름으로 / 교사·학급 도구
 // cat 은 칸 제목, chip 은 위쪽 거르기 단추에 보이는 짧은 이름이다.
@@ -574,7 +573,7 @@ const DATA = [
           test:"https://script.google.com/macros/s/AKfycbyLBcTH2eMyDmg5_630Cdj4TwtDAaJfUjmx3rCisVGRrY6HSCQI4SF00toVAHLFG2B4qQ/exec",
           menu:"📝 활동지", setup:"시트 만들기 / 머리글 정리", reset:"🔑 학생 비밀번호 초기화" } },
       { icon:"🧱", title:"자료구조 실습실", desc:"큐·스택·트리·그래프를 직접 조작해 보는 자료구조 탐구 실습 활동지",
-        teacher:{ key:"data-structure",
+        teacher:{ key:"data-structure", repo:"data_structure_basics",
           sheet:"https://docs.google.com/spreadsheets/d/1EmMJboqcB82SfpizwqM60e98UEsGibSUEkNhC9acLSk/copy",
           test:"https://script.google.com/macros/s/AKfycbwh4awxXz4RVxTqb6pHzo_ScTNu0TaL6ESus3mz0mZL9JlTZcrIFbv0TzgB9G3jeemNFw/exec",
           menu:"자료구조 실습실", setup:"① 시트 준비하기", reset:"⑥ 비밀번호 초기화" } },
@@ -1388,6 +1387,17 @@ guideView.addEventListener('change', e=>{
 guideView.addEventListener('focusin', e=>{
   if(e.target.classList.contains('link-box')) e.target.select();
 });
+
+// 맨 위 상자의 「📦 지금까지 공개한 자료 N개」 — 카드 수를 세고, 마우스를 올리면 종류별 개수가 보인다
+(function showCount(){
+  const el = document.getElementById('tgCount');
+  if(!el) return;
+  const byKind = {};
+  let total = 0;
+  DATA.forEach(g=> g.items.forEach(it=>{ const k = kindOf(it, g); byKind[k] = (byKind[k] || 0) + 1; total++; }));
+  el.innerHTML = `📦 지금까지 공개한 자료: <b>${total}개</b>`;
+  el.title = Object.entries(byKind).sort((a, b)=> b[1] - a[1]).map(([k, n])=> `${k} ${n}`).join(' · ');
+})();
 
 render();
 route();   // #copy-<key> 링크로 바로 들어온 선생님은 곧장 안내 화면
