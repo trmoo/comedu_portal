@@ -26,6 +26,7 @@ window.UPDATED = {
   "informatics_trmoo": { made: "2026-08-07", updated: "2026-08-07", readme: true, issues: true },
   "llm-rag-lab": { made: "2026-08-10", updated: "2026-08-10", readme: true, issues: true },
   "major-map": { made: "2026-09-03", updated: "2026-10-21", readme: true, issues: true },
+  "mini-book-fair": { made: "2026-11-10", updated: "2026-11-10", readme: true, issues: true },
   "ml-lab": { made: "2026-09-19", updated: "2026-09-19", readme: true, issues: true },
   "ml-regression": { made: "2026-10-27", updated: "2026-10-27", readme: true, issues: true },
   "object-oriented": { made: "2026-07-29", updated: "2026-08-07", readme: true, issues: true },
