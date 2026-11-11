@@ -191,6 +191,9 @@
     transition:border-color .15s,color .15s,transform .15s;
   }
   .c-side.sq{width:46px;padding:0;font-size:18px;}
+  /* 체험판에 선생님 화면이 있는 카드 — 학생 · 교사 두 단추가 나란히 들어가도록 좁게 */
+  .c-main.duo-row{margin-top:8px;}
+  .c-side.duo{flex:1 1 0;min-width:0;min-height:40px;padding:0 8px;gap:4px;font-size:13.5px;white-space:nowrap;}
   .c-side:hover{border-color:var(--accent-ink,#2f55c9);color:var(--accent-ink,#2f55c9);transform:translateY(-1px);}
   .c-pills{gap:6px;margin-top:8px;}
   .pill{
@@ -779,6 +782,7 @@ function topHtml(it, group, titleEl){
 function teacherCard(it, group){
   const t = it.teacher;
   const url = copyUrl(t);
+  const dash = dashDemo(t);
   const card = document.createElement('div');
   card.className = 'card';
   // 영역 칸 안에 섞여도 예전 「제출형 활동지」 칸의 초록 모양을 그대로 쓴다
@@ -788,7 +792,11 @@ function teacherCard(it, group){
   const main = (url
       ? `<a class="c-open" href="${url}" target="_blank" rel="noopener" data-copy-go="${esc(t.key)}">🧑‍🏫 교사용 사본 만들기</a>`
       : `<span class="c-open wait">🧑‍🏫 원본 준비 중</span>`)
-    + (t.test ? `<a class="c-side" href="${esc(t.test)}" target="_blank" rel="noopener" title="${t.demo
+    + (dash
+      ? /* bottomHtml 이 이 글을 .c-main 한 줄에 넣는다 — 줄을 닫고 둘째 줄을 열어 학생 · 교사 두 단추를 따로 놓는다(한 줄이면 사본 단추가 두 줄로 접힌다) */
+        `</div><div class="c-main duo-row"><a class="c-side duo" href="${esc(dash.student)}" target="_blank" rel="noopener" title="학생 화면 체험(새 탭) — 적은 내용은 어디에도 저장되지 않습니다">▶ 학생 화면 체험</a>`
+        + `<a class="c-side duo" href="${esc(dash.teacher)}" target="_blank" rel="noopener" title="선생님 화면 체험(새 탭) — 암호 ${esc(dash.pw)} · 지어낸 반 친구들의 기록이 들어 있습니다">📊 교사용 화면 체험</a>`
+      : t.test ? `<a class="c-side" href="${esc(t.test)}" target="_blank" rel="noopener" title="${t.demo
         ? (t.demo === 'student' ? '학생 화면을' : '학생 · 선생님 화면을') + ' 미리 써 보는 체험 페이지(새 탭) — 적은 내용은 어디에도 저장되지 않습니다'
         : '학생 화면을 둘러보는 테스트 페이지(새 탭) — 실제 학생 정보는 넣지 마세요'}">▶ 테스트</a>` : '');
   card.innerHTML =
@@ -862,6 +870,14 @@ function render(){
   emptyEl.style.display = total===0 ? 'block' : 'none';
 }
 
+// 체험판(demo:true)에는 학생 화면과 선생님 화면이 따로 있다 — 체험 안내(test)와 같은 폴더의 student.html · teacher.html
+// (각 앱 tools/site.mjs 가 이 이름으로 만든다). 선생님 화면 암호는 체험판 모두 teach1234 — 다르면 teacher.testPw 에 적는다.
+function dashDemo(t){
+  if (!t || t.demo !== true || !t.test) return null;
+  const base = t.test.endsWith('/') ? t.test : t.test + '/';
+  return { guide: t.test, student: base + 'student.html', teacher: base + 'teacher.html', pw: t.testPw || 'teach1234' };
+}
+
 // ─── ① 카드를 누르면 뜨는 창: 교사용 사본 / 테스트 페이지 ─────────────
 function panelHtml(it){
   const t = it.teacher;
@@ -875,7 +891,22 @@ function panelHtml(it){
       </a>`
     : `<div class="choice wait"><span class="c-ico">🧑‍🏫</span>
         <span class="c-txt"><b>원본 준비 중</b><small>배포용 원본 시트를 준비하고 있어요.</small></span></div>`;
-  const testChoice = t.test
+  const dash = dashDemo(t);
+  const testChoice = dash
+    ? `<a class="choice" href="${esc(dash.student)}" target="_blank" rel="noopener">
+        <span class="c-ico">▶</span>
+        <span class="c-txt"><b>테스트 페이지 — 학생 화면</b>
+          <small>학생이 보는 화면을 미리 써 보는 체험판입니다(새 탭). 지어낸 반 친구들과 함께 돌아가고, 적은 내용은 그 브라우저 안에만 있어 어디에도 저장되지 않습니다. 연습용 계정은 화면 아래 띠에 있어요.</small></span>
+        <span class="c-go">${ARROW}</span>
+      </a>
+      <a class="choice" href="${esc(dash.teacher)}" target="_blank" rel="noopener">
+        <span class="c-ico">📊</span>
+        <span class="c-txt"><b>테스트 페이지 — 교사용 화면</b>
+          <small>선생님 화면(대시보드)을 미리 써 보는 체험판입니다(새 탭). 암호 <b>${esc(dash.pw)}</b> 로 들어가면 지어낸 반 친구들의 기록이 보입니다. 학생 화면 체험과는 서로 이어져 있지 않아요.</small></span>
+        <span class="c-go">${ARROW}</span>
+      </a>
+      <p class="hint" style="margin:-4px 0 0">두 화면을 한눈에 소개하는 <a href="${esc(dash.guide)}" target="_blank" rel="noopener">체험 안내 페이지</a>도 있어요.</p>`
+    : t.test
     ? `<a class="choice" href="${esc(t.test)}" target="_blank" rel="noopener">
         <span class="c-ico">▶</span>
         <span class="c-txt"><b>테스트 페이지</b>
