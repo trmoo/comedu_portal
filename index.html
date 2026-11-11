@@ -499,7 +499,7 @@
 
 <!-- 안내 그림(SVG)을 그리는 부품 — 이 파일이 없어도 포털은 열리고 안내 글만 보인다 -->
 <script src="guide-figures.js"></script>
-<script src="updated.js?v=202611102044"></script>
+<script src="updated.js?v=202611111635"></script>
 <script>
 // 분류: 웹교과서 / 수업교안 노트 / 학습 자료는 2022 개정 「정보」 영역 이름으로 / 교사·학급 도구
 // cat 은 칸 제목, chip 은 위쪽 거르기 단추에 보이는 짧은 이름이다.
@@ -519,7 +519,7 @@
   //           (선생님이 사본 시트에서 눌러야 할 메뉴 이름이 안내와 그림에 그대로 나온다).
   //   drive — 드라이브 권한도 묻는 앱이면 true (권한 설명에 한 줄 더한다)
   //   perm  — 권한 설명 한 줄을 직접 적는다(drive 문장 대신. 문서 권한까지 묻는 앱 등)
-  //   demo  — test 가 서버 없는 체험판(깃허브 Pages)이면 true. 「티쳐무 선생님의 시험용 시트에 남는다」 대신
+  //   demo  — test 가 서버 없는 체험판(깃허브 Pages)이면 true(학생 · 선생님 화면) 또는 "student"(학생 화면만 — 선생님 기능이 시트 메뉴뿐인 앱). 「티쳐무 선생님의 시험용 시트에 남는다」 대신
   //           「어디에도 저장되지 않는다」로 안내한다 (꿈누리 출판 — 학생 · 선생님 화면을 함께 체험)
   //   dashNote — dashboard 줄의 뒷부분(선생님 화면이 하는 일). 없으면 TV 발표 화면 문장
 const DATA = [
@@ -560,12 +560,12 @@ const DATA = [
       { icon:"🗂️", title:"공공데이터 수집 기록장", desc:"공공데이터를 수집하고 과정을 기록하는 탐구 활동지",
         teacher:{ key:"open-data", repo:"open-data",
           sheet:"https://docs.google.com/spreadsheets/d/1xr_rgURmxdM_Lt78nqoFoM-rzPhlU4rBFgk_L_LVuW0/copy",
-          test:"https://script.google.com/macros/s/AKfycbzznJxCwfL-tWO6E4o35rfQveH6VPFEaXLh4PsRfMR5LreRVh67XyXbw-QumzqQFmZz/exec",
+          test:"https://trmoo.github.io/open-data/", demo:"student",
           menu:"공공데이터 수집 기록장", setup:"① 시트 준비하기", reset:"⑦ 비밀번호 초기화" } },
       { icon:"🔍", title:"검색어 트렌드 분석하기", desc:"빅데이터의 개념과 특징을 익히고, 검색어 트렌드를 시각화·분석해 미래를 예측하는 활동지",
         teacher:{ key:"trend-bigdata", repo:"trend_bigdata",
           sheet:"https://docs.google.com/spreadsheets/d/1-XZOnMdGDg4Qofg1jK3Nv9UvfaRJnA8VJ0fKqMjgtuY/copy",
-          test:"https://script.google.com/macros/s/AKfycbyQkirXEar4NBWLkjsXSJUguznNNtZnNVEKPATKt8rVchSr__oGMSq0c2_G0DMNNNUseQ/exec",
+          test:"https://trmoo.github.io/trend_bigdata/", demo:"student",
           menu:"📊 빅데이터 학습지", setup:"시트 만들기 / 머리글 정리", reset:"🔑 학생 비밀번호 초기화", drive:true } },
     ]
   },
@@ -580,24 +580,24 @@ const DATA = [
       { icon:"💡", title:"SW 개발 아이디어 제안하기", desc:"SW 개발 아이디어를 제안 배경·세부 내용·기대 효과로 정리해 제출하는 활동지",
         teacher:{ key:"sw-idea", repo:"sw-idea",
           sheet:"https://docs.google.com/spreadsheets/d/1Tm4mJKw2UZsfD5sYCcobNGDZov9uhzMEe5t1fB8uXFk/copy",
-          test:"https://script.google.com/macros/s/AKfycbyLBcTH2eMyDmg5_630Cdj4TwtDAaJfUjmx3rCisVGRrY6HSCQI4SF00toVAHLFG2B4qQ/exec",
+          test:"https://trmoo.github.io/sw-idea/", demo:"student",
           menu:"📝 활동지", setup:"시트 만들기 / 머리글 정리", reset:"🔑 학생 비밀번호 초기화" } },
       { icon:"🧱", title:"자료구조 실습실", desc:"큐·스택·트리·그래프를 직접 조작해 보는 자료구조 탐구 실습 활동지",
         teacher:{ key:"data-structure", repo:"data_structure_basics",
           sheet:"https://docs.google.com/spreadsheets/d/1EmMJboqcB82SfpizwqM60e98UEsGibSUEkNhC9acLSk/copy",
-          test:"https://script.google.com/macros/s/AKfycbwh4awxXz4RVxTqb6pHzo_ScTNu0TaL6ESus3mz0mZL9JlTZcrIFbv0TzgB9G3jeemNFw/exec",
+          test:"https://trmoo.github.io/data_structure_basics/", demo:"student",
           menu:"자료구조 실습실", setup:"① 시트 준비하기", reset:"⑥ 비밀번호 초기화" } },
       // next — 시트 준비 다음에 눌러야 할 메뉴(교사 암호 등) · dashboard — 배포 주소 뒤에 붙이는 교사 화면 꼬리
       { icon:"🥤", title:"부숴봐! 자판기 - 예외처리 1차시", desc:"자판기를 일부러 고장 내며 예외를 찾고, try–except 로 방어막을 세우는 2차시 게임. 선생님 대시보드에서 반 전체 진행을 실시간으로 봐요",
         teacher:{ key:"exception-basics", repo:"exception-basics",
           sheet:"https://docs.google.com/spreadsheets/d/1cMKTmO_HFpcChS8TZTtw8Dpnel7QOb9krftvQyX3GvE/copy",
-          test:"https://script.google.com/macros/s/AKfycbzjS12sxmOim86OkkD-Gcrbr1zZKhTo1qAltjI6NiMsdLZ_cAY3g7vcmQm5qaR_ljTBTQ/exec",
+          test:"https://trmoo.github.io/exception-basics/", demo:true,
           menu:"🥤 부숴봐! 자판기", setup:"① 시트 준비하기", reset:"③ 학생 비밀번호 초기화",
           next:"② 교사 암호 정하기", dashboard:"?page=teacher" } },
       { icon:"🎯", title:"부숴봐! 자판기 - 예외처리 3차시 (raise)", desc:"방어막 자판기도 못 막는 「멈추지 않는 고장」을 찾고, raise 로 규칙을 세워 예외를 일으킨 뒤, 맞을 때까지 다시 묻는 끝판왕 자판기를 만드는 활동. 1·2차시 다음 시간용",
         teacher:{ key:"exception-raise", repo:"exception-raise",
           sheet:"https://docs.google.com/spreadsheets/d/1KZqi3vQOsHXfTIIm_WkBbLiuhLKlHzMA3x_Pja8MIac/copy",
-          test:"https://script.google.com/macros/s/AKfycbyKh367D78y7IT6-awRp-srpt_T0h7_4aHsbdnXeWQR-RPajJsb8atBt3xVAjpkFj2EQg/exec",
+          test:"https://trmoo.github.io/exception-raise/", demo:true,
           menu:"🥤 부숴봐! 자판기 3차시", setup:"① 시트 준비하기", reset:"③ 학생 비밀번호 초기화",
           next:"② 교사 암호 정하기", dashboard:"?page=teacher" } },
     ]
@@ -611,12 +611,12 @@ const DATA = [
       { icon:"📈", title:"광고비와 매출 사이의 관계 알아보기 (1차시)", desc:"오렌지3으로 단순·다중 선형 회귀를 돌려 보고 평가 지표·회귀식을 적어 제출하는 통계적 회귀 분석 활동지",
         teacher:{ key:"regression-stat", repo:"statistical-regression",
           sheet:"https://docs.google.com/spreadsheets/d/1WUfPqyuboZRsl9bM2dWfZdxoUIB1ofOX1cx6n9i56y8/copy",
-          test:"https://script.google.com/macros/s/AKfycbzsYXoljJ83ml32PcyNJEuFVM3zve6s2GAFzAqg7mO0pgNzLZk33flbs1Y7xcHXJJPQ/exec",
+          test:"https://trmoo.github.io/statistical-regression/", demo:true,
           menu:"📈 광고비와 매출 학습지", setup:"① 시트 준비하기", reset:"비밀번호 초기화", drive:true } },
       { icon:"🤖", title:"기계학습으로 광고비와 매출 예측하기 (2차시)", desc:"같은 데이터를 70% / 30% 로 나누어 모델을 만들고, 배우지 않은 30%로 평가해 「새 시장에 써도 될까」를 따져 보는 활동지",
         teacher:{ key:"regression-ml", repo:"ml-regression",
           sheet:"https://docs.google.com/spreadsheets/d/1pu-agUlyNX_v5sgmqVaL-PidvbQXiEng4ZHkF-6eCzk/copy",
-          test:"https://script.google.com/macros/s/AKfycby8eJ2GkYXDO-NFkVciU0jmBxbDcn1atQOYL5B12m4LlxVFv0HS8ch7s3WT2HcSCT8e/exec",
+          test:"https://trmoo.github.io/ml-regression/", demo:true,
           menu:"🤖 기계학습 회귀 학습지", setup:"① 시트 준비하기", reset:"비밀번호 초기화", drive:true } },
     ]
   },
@@ -625,9 +625,9 @@ const DATA = [
       { icon:"🔐", title:"내 계정 지킴이", desc:"가입한 사이트를 찾아 정리하고, 비밀번호가 얼마나 안전한지 검사하고, 안전한 비밀번호를 만드는 법을 익히는 도구", url:"https://trmoo.github.io/privacy_account_pw/" },
       // 제출형 활동지 (Apps Script — 교사용 사본)
       { icon:"🧭", title:"데이터 과학의 영향력 탐구 (진로연계)", desc:"데이터로 달라진 세상의 긍정·부정 영향을 평가하고, 그 안에서 나의 진로를 설계하는 활동지",
-        teacher:{ key:"data-science-career",
+        teacher:{ key:"data-science-career", repo:"data_science_career", made:"2026-08-24",
           sheet:"https://docs.google.com/spreadsheets/d/1K4bw1kxPL8bFdl8xUsTI_VoOi3PrkciPDMf-aeWapCI/copy",
-          test:"https://script.google.com/macros/s/AKfycbyJUcwACPBUGEf8ma5Mx6suHFjjeb1pmtU6sEJWJCHQnRM1Rv5ttOpsuATBbHpfEMOudg/exec",
+          test:"https://trmoo.github.io/data_science_career/", demo:"student",
           menu:"데이터 과학 영향력 탐구", setup:"① 시트 준비하기", reset:"⑦ 비밀번호 초기화" } },
     ]
   },
@@ -789,7 +789,7 @@ function teacherCard(it, group){
       ? `<a class="c-open" href="${url}" target="_blank" rel="noopener" data-copy-go="${esc(t.key)}">🧑‍🏫 교사용 사본 만들기</a>`
       : `<span class="c-open wait">🧑‍🏫 원본 준비 중</span>`)
     + (t.test ? `<a class="c-side" href="${esc(t.test)}" target="_blank" rel="noopener" title="${t.demo
-        ? '학생 · 선생님 화면을 미리 써 보는 체험 페이지(새 탭) — 적은 내용은 어디에도 저장되지 않습니다'
+        ? (t.demo === 'student' ? '학생 화면을' : '학생 · 선생님 화면을') + ' 미리 써 보는 체험 페이지(새 탭) — 적은 내용은 어디에도 저장되지 않습니다'
         : '학생 화면을 둘러보는 테스트 페이지(새 탭) — 실제 학생 정보는 넣지 마세요'}">▶ 테스트</a>` : '');
   card.innerHTML =
     topHtml(it, group, `<button type="button" class="stretch" data-panel="${esc(t.key)}">${esc(it.title)}</button>`)
@@ -880,7 +880,7 @@ function panelHtml(it){
         <span class="c-ico">▶</span>
         <span class="c-txt"><b>테스트 페이지</b>
           <small>${t.demo
-            ? '학생 화면과 선생님 화면을 미리 써 보는 체험판입니다(새 탭). 지어낸 반 친구들과 함께 돌아가고, 적은 내용은 그 브라우저 안에만 있어 어디에도 저장되지 않습니다. 연습용 계정은 체험 페이지 첫 화면에 있어요.'
+            ? (t.demo === 'student' ? '학생 화면을' : '학생 화면과 선생님 화면을') + ' 미리 써 보는 체험판입니다(새 탭). 지어낸 학생들과 함께 돌아가고, 적은 내용은 그 브라우저 안에만 있어 어디에도 저장되지 않습니다. 연습용 계정은 체험 페이지 첫 화면에 있어요.'
             : '학생 화면을 미리 둘러보는 체험용입니다(새 탭). 입력한 내용은 티쳐무 선생님의 시험용 시트에 남으니, 실제 이름·학번 대신 연습용 값(예: 20101)을 넣어 주세요.'}</small></span>
         <span class="c-go">${ARROW}</span>
       </a>`
