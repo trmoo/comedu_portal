@@ -502,7 +502,7 @@
 
 <!-- 안내 그림(SVG)을 그리는 부품 — 이 파일이 없어도 포털은 열리고 안내 글만 보인다 -->
 <script src="guide-figures.js"></script>
-<script src="updated.js?v=202611111635"></script>
+<script src="updated.js?v=202611111949"></script>
 <script>
 // 분류: 웹교과서 / 수업교안 노트 / 학습 자료는 2022 개정 「정보」 영역 이름으로 / 교사·학급 도구
 // cat 은 칸 제목, chip 은 위쪽 거르기 단추에 보이는 짧은 이름이다.
@@ -554,11 +554,14 @@ const DATA = [
       { icon:"📚", title:"PyDataset 데이터 도감", desc:"파이썬 연습용 데이터 757개를 주제별로 찾아보는 도감", url:"https://trmoo.github.io/pydataset-catalog/" },
       { icon:"🌊", title:"Seaborn 데이터 도감", desc:"seaborn 예제 데이터 22개와 그래프 함수 21가지를 찾아보고, 맷플롯립 코드와 나란히 견주는 도감", url:"https://trmoo.github.io/seaborn-catalog/" },
       { icon:"🐼", title:"판다스 실습실", desc:"설치 없이 브라우저에서 판다스 명령을 직접 실행하며 배우고, 빅데이터분석기사 작업형1 미션과 치트시트로 마무리", url:"https://trmoo.github.io/pandas_study/" },
+      { icon:"🧪", title:"작업형3 통계 실습실", desc:"빅데이터분석기사 실기 작업형3(가설검정·분산분석·카이제곱·회귀·로지스틱 회귀)을 설치 없이 브라우저의 진짜 파이썬으로 빈칸을 채우며 연습하고, 모의 문제로 마무리하는 실습실", url:"https://trmoo.github.io/bigbungi/" },
       { icon:"🐧", title:"펭귄 데이터로 전처리 연습하기", desc:"결측치·이상치·정규화 명령어를 빈칸 채우며 브라우저에서 실행해 보는 도구", url:"https://trmoo.github.io/penguins_analysis/" },
       { icon:"💎", title:"다이아몬드 데이터로 EDA 연습하기", desc:"다이아몬드 180개로 기본 정보 파악·결측치 채우기·산점도·원 그래프·해석까지, 수행평가 형식 그대로 브라우저에서 연습하는 시험지", url:"https://trmoo.github.io/diamonds_ds_performance_pract/", kind:"연습 시험지" },
       { icon:"📐", title:"회귀 분석의 핵심개념 탐구", desc:"광고비·매출액 9개월 자료에 직선을 직접 그어 보며 최소제곱법·상관계수·MAE·MSE·결정 계수를 익히고, 활동을 파일로 저장해 이어서 하는 실습", url:"https://trmoo.github.io/regression-lab/" },
       { icon:"🚲", title:"자전거 대여량 회귀 분석 실습실", desc:"날씨·시간대로 공유 자전거 대여량을 예측하는 교과서 회귀 분석 실습을, 설치 없이 브라우저의 진짜 파이썬으로 빈칸을 채우며 따라 하는 실습실", url:"https://trmoo.github.io/regression-python/" },
       { icon:"📈", title:"연관분석 연습장", desc:"연관 규칙 분석 개념을 연습하는 도구", url:"https://trmoo.github.io/association-analysis/" },
+      { icon:"🍊", title:"오렌지 데이터 교실", desc:"오렌지3 위젯을 순서대로 이어 보며 데이터 준비·모델 평가부터 회귀·k-평균 군집·연관 분석 프로젝트까지 카드 한 장씩 따라 하는 데이터 과학 교실", url:"https://trmoo.github.io/orange-class/",
+        warn:"🔑 단원마다 입장 코드가 있어야 열려요. 수업에 쓰실 선생님은 enssam21@gmail.com 으로 코드를 문의해 주세요." },
       // 제출형 활동지 (Apps Script — 교사용 사본)
       { icon:"🗂️", title:"공공데이터 수집 기록장", desc:"공공데이터를 수집하고 과정을 기록하는 탐구 활동지",
         teacher:{ key:"open-data", repo:"open-data",
